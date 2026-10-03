@@ -61,7 +61,7 @@
 - [x] 7.2 Hover cards
 - [x] 7.3 Chart animations (Recharts transitions; lightweight)
 - [x] 7.4 Scroll-triggered (FadeIn)
-- [ ] 7.5 Smooth transitions + reduced-motion + a11y
+- [x] 7.5 Smooth transitions + reduced-motion + a11y (minimal) + reduced-motion + a11y
 
 ## Phase 8 — ML Integration
 - [ ] 8.1 Wire evaluated models
@@ -75,6 +75,7 @@
 ## Phase 10 — GitHub Completion
 - [ ] 10.1 Final checks (secrets/dataset)
 - [ ] 10.2 Commits, push, report
+
 
 
 
