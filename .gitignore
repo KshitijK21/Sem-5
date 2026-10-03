@@ -1,0 +1,40 @@
+# Node
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/.cache/
+
+# Python
+backend/.venv/
+backend/__pycache__/
+backend/app/**/__pycache__/
+ml/.venv/
+ml/__pycache__/
+ml/src/**/__pycache__/
+*.pyc
+
+# Env
+.env
+.env.local
+
+# Data/model artifacts
+ml/data/processed/
+ml/models/*.pkl
+ml/models/*.joblib
+ml/models/*.h5
+ml/models/*.onnx
+
+# Logs
+*.log
+logs/
+
+# Build
+*.egg-info/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
