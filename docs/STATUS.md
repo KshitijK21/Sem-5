@@ -1,32 +1,25 @@
-## Status vs Master Prompt
+## Status vs Master Prompt (updated)
 
-### Done (so far)
-- Phase 1 (Env & Repo)
-  - [x] Environment inspected (OS, Downloads, olist found, tools)
-  - [x] Local project dir created at Downloads/sem-5
-  - [x] Git initialized; remote set to https://github.com/KshitijK21/Sem-5.git; pushed to main
-  - [x] Project structure created (frontend/backend/ml/database/docs/scripts/tests/.github/workflows)
-  - [x] .gitignore, .env.example, README.md written
-- Phase 2 (Dataset + Contracts) - started
-  - [x] Olist inventory (9 CSVs) with headers/row counts
-  - [x] Dataset profiling: nulls per file + orders date range (2016-09-04 to 2018-11-12)
-  - [x] Draft docs: DATASET_SUMMARY, DATA_DICTIONARY_DRAFT, DATASET_PROFILE, DECISIONS, RBAC, PROJECT_PLAN
+### Done
+- P1: full setup, git+remote, structure, docs, env/gitignore
+- P2: dataset profiling, contracts (DB/warehouse, API, ML I/O, RBAC, decisions)
+- P3: FE skeleton (Vite+React+TS+Tailwind, layout/routes/dashboard, health check), BE (FastAPI core/config/db, dashboard+ml stubs), ML scaffolds
+- P4: ETL stub, warehouse DDL draft
+- P5: EDA, baselines stub, ML metadata schema, ML status API (planned)
+- P6: AI assistant design doc
 
 ### In Progress
-- Phase 2 continued: warehouse schema (facts/dims, grain), API contracts, ML I/O schemas (model metadata/status). No code yet for FE/BE/ML models; focused on docs/contracts.
+- P4: verified KPIs, data quality checks (4.3-4.4)
+- P5: feasibility for models (5.4), ML backend interfaces polished (5.6)
+- P6: controlled tools + provider-agnostic (6.2-6.3)
+- P7: premium interactions (7.x)
 
-### Not started
-- Phase 3 FE/BE core (design system, FastAPI skeleton, React+Vite+TS+Tailwind, auth/RBAC implementation)
-- Phase 4 WH+ETL implementation + KPIs + dashboards
-- Phase 5 ML parallel (EDA, preprocessing, baselines, models, artifacts)
-- Phase 6 AI Insights (Ollama/provider-agnostic, controlled tools)
-- Phase 7 Premium interactions
-- Phase 8 ML integration
-- Phase 9 Testing + full docs
-- Phase 10 Final checks
+### Next
+- Add analytics endpoints stubs aligned to contracts
+- Write SETUP.md + SRS.md + ARCHITECTURE.md basics
+- Start basic charts (Recharts) on dashboard using placeholder data
+- Keep ML training deferred until feasibility; show honest statuses
 
-### Blockers
-- GitHub CLI not used (as requested); repo connected via HTTPS (push succeeded). No auth issues reported after setting correct username.
-
-### Parallel readiness
-- Contracts (API + ML I/O + warehouse) defined before FE/ML implementation - next priority per prompt.
+### Notes
+- ML not trained yet (only structure). Website usable without ML/LLM.
+- External olist preserved; not committed.
