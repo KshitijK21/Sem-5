@@ -52,8 +52,8 @@
 
 ## Phase 6 — AI Business Insights
 - [x] 6.1 Controlled data retrieval (design doc) (tools/functions)
-- [ ] 6.2 LLM integration (Ollama preferred, provider-agnostic)
-- [ ] 6.3 Permission-aware context, fallbacks
+- [x] 6.2 LLM integration (provider-agnostic stub) (Ollama preferred, provider-agnostic)
+- [x] 6.3 Permission-aware context, fallbacks (design + stub)
 - [x] 6.4 Assistant UI (stub) + examples
 
 ## Phase 7 — Premium Interactions
@@ -75,6 +75,8 @@
 ## Phase 10 — GitHub Completion
 - [ ] 10.1 Final checks (secrets/dataset)
 - [ ] 10.2 Commits, push, report
+
+
 
 
 
