@@ -59,8 +59,8 @@
 ## Phase 7 — Premium Interactions
 - [x] 7.1 Cursor-responsive lighting (design) lighting
 - [x] 7.2 Hover cards
-- [ ] 7.3 Chart animations
-- [ ] 7.4 Scroll-triggered
+- [x] 7.3 Chart animations (Recharts transitions; lightweight)
+- [x] 7.4 Scroll-triggered (FadeIn)
 - [ ] 7.5 Smooth transitions + reduced-motion + a11y
 
 ## Phase 8 — ML Integration
@@ -75,6 +75,7 @@
 ## Phase 10 — GitHub Completion
 - [ ] 10.1 Final checks (secrets/dataset)
 - [ ] 10.2 Commits, push, report
+
 
 
 
