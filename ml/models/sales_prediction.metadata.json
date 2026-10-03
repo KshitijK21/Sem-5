@@ -1,0 +1,36 @@
+{
+  "name": "sales_prediction",
+  "version": "0.1.0",
+  "target": "item_revenue",
+  "algorithm": "best of [LinearRegression, RandomForest] -> linear_regression",
+  "trained_at": "2026-10-03T12:40:04.202881+00:00",
+  "dataset_fingerprint": "f0083069ec91f65d",
+  "features_schema": [
+    "purchase_month",
+    "purchase_weekday",
+    "purchase_hour",
+    "n_items",
+    "customer_state",
+    "product_category_name"
+  ],
+  "metrics": {
+    "selected": "linear_regression",
+    "candidates": {
+      "linear_regression": {
+        "mae": 96.048,
+        "rmse": 215.9341,
+        "mape": 139.455
+      },
+      "random_forest": {
+        "mae": 97.121,
+        "rmse": 217.547,
+        "mape": 142.3569
+      }
+    },
+    "n_train": 78932,
+    "n_test": 19734
+  },
+  "status": "available",
+  "artifact": "sales_prediction.joblib",
+  "notes": "Random split seed=42. No leakage features. Historical data only."
+}

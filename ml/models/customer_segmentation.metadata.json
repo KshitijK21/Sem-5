@@ -1,0 +1,43 @@
+{
+  "name": "customer_segmentation",
+  "version": "0.1.0",
+  "target": "cluster_label",
+  "algorithm": "KMeans (RFM, standardized)",
+  "trained_at": "2026-10-03T12:51:36.675817+00:00",
+  "dataset_fingerprint": "93f4aa5a3dc0ca0a",
+  "features_schema": [
+    "recency_days",
+    "frequency",
+    "monetary_log"
+  ],
+  "metrics": {
+    "k": 2,
+    "silhouette": 0.6858,
+    "silhouette_by_k": {
+      "2": 0.6858,
+      "3": 0.3627,
+      "4": 0.3618,
+      "5": 0.3295,
+      "6": 0.3296
+    },
+    "cluster_sizes": {
+      "0": 93099,
+      "1": 2997
+    },
+    "cluster_means": {
+      "0": {
+        "recency_days": 289.36,
+        "frequency": 1.0,
+        "monetary": 137.63
+      },
+      "1": {
+        "recency_days": 269.21,
+        "frequency": 2.12,
+        "monetary": 259.87
+      }
+    }
+  },
+  "status": "available",
+  "artifact": "customer_segmentation.joblib",
+  "notes": "monetary log1p-transformed; k selected by silhouette."
+}
