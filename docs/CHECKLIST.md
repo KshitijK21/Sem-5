@@ -47,7 +47,7 @@
 - [x] 5.2 EDA/preprocessing (notebooks + src)
 - [x] 5.3 Baselines (stubs created)
 - [x] 5.4 Forecasting, Sales prediction, Segmentation, Anomaly (feasibility done), Sales prediction, Segmentation, Anomaly (feasibility)
-- [x] 5.5 Training/eval (schema/docs only; no heavy training yet), model artifacts, metadata
+- [x] 5.5 Training/eval (light baseline run; no heavy training; metrics documented in ML_BASELINES.md)
 - [x] 5.6 ML backend interfaces + status + status
 
 ## Phase 6 — AI Business Insights
@@ -75,6 +75,7 @@
 ## Phase 10 — GitHub Completion
 - [ ] 10.1 Final checks (secrets/dataset)
 - [ ] 10.2 Commits, push, report
+
 
 
 
