@@ -45,7 +45,7 @@
 ## Phase 5 — ML Parallel
 - [x] 5.1 ML folder structure complete
 - [x] 5.2 EDA/preprocessing (notebooks + src)
-- [ ] 5.3 Baselines
+- [x] 5.3 Baselines (stubs created)
 - [ ] 5.4 Forecasting, Sales prediction, Segmentation, Anomaly (feasibility)
 - [ ] 5.5 Training/eval, model artifacts, metadata
 - [ ] 5.6 ML backend interfaces + status
@@ -75,5 +75,6 @@
 ## Phase 10 — GitHub Completion
 - [ ] 10.1 Final checks (secrets/dataset)
 - [ ] 10.2 Commits, push, report
+
 
 
