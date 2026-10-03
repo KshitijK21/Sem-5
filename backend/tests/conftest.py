@@ -8,6 +8,10 @@ BACKEND_DIR = Path(__file__).resolve().parents[1]
 # Ensure the dev SQLite DB resolves regardless of the invocation directory.
 os.environ.setdefault("DATABASE_URL", f"sqlite:///{(BACKEND_DIR / 'sem5.db').as_posix()}")
 
+# Keep tests deterministic/fast: never call a live LLM during the test suite,
+# even if backend/.env enables the assistant.
+os.environ["ENABLE_LLM_ASSISTANT"] = "false"
+
 import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 
