@@ -6,3 +6,9 @@ sqlalchemy==2.0.36
 psycopg2-binary==2.9.10
 python-multipart==0.0.17
 python-dotenv==1.0.1
+
+# ML serving (loads artifacts produced by ml/ training scripts)
+joblib==1.4.2
+numpy==2.1.3
+pandas==2.2.3
+scikit-learn==1.5.2
