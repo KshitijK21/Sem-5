@@ -1,7 +1,14 @@
+import { getToken } from './auth'
+
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 
+function authHeaders(): Record<string, string> {
+  const token = getToken()
+  return token ? { Authorization: `Bearer ${token}` } : {}
+}
+
 async function getJson<T>(path: string): Promise<T> {
-  const r = await fetch(`${API_BASE}${path}`)
+  const r = await fetch(`${API_BASE}${path}`, { headers: authHeaders() })
   if (!r.ok) throw new Error(`Request failed: ${r.status}`)
   return r.json()
 }
@@ -92,7 +99,7 @@ export function getAnalyticsSellers() {
 async function postJson<T>(path: string, body: unknown): Promise<T> {
   const r = await fetch(`${API_BASE}${path}`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
     body: JSON.stringify(body),
   })
   if (!r.ok) throw new Error(`Request failed: ${r.status}`)
