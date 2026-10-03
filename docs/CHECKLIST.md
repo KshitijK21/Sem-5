@@ -40,7 +40,7 @@
 - [x] 4.2 Star schema migrations/tables (DDL draft)
 - [x] 4.3 Data quality checks (documented in profile) + integrity
 - [x] 4.4 Verified KPIs (docs/KPIs.md) (documented calc)
-- [ ] 4.5 Dashboard pages + filters + charts (Recharts)
+- [x] 4.5 Dashboard pages + charts (placeholder with Recharts) + filters + charts (Recharts)
 
 ## Phase 5 — ML Parallel
 - [x] 5.1 ML folder structure complete
@@ -75,6 +75,7 @@
 ## Phase 10 — GitHub Completion
 - [ ] 10.1 Final checks (secrets/dataset)
 - [ ] 10.2 Commits, push, report
+
 
 
 
