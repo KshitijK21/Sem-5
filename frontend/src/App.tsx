@@ -1,13 +1,8 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
-import Landing from './pages/Landing'
+import { RouterProvider } from 'react-router-dom'
+import { router } from './routes/routes'
 
 function App() {
-  return (
-    <Routes>
-      <Route path="/" element={<Landing />} />
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
-  )
+  return <RouterProvider router={router} />
 }
 
 export default App
