@@ -1,25 +1,56 @@
-# API_DOCUMENTATION.md (contracts draft)
+# API_DOCUMENTATION.md
 
 ## Base
-- Base URL: http://localhost:8000/api
-- Auth: token-based (JWT) or session; implement secure storage. Backend enforces RBAC.
+- Base URL: `http://localhost:8000`
+- Auth: JWT Bearer. Obtained via `POST /api/auth/login` (OAuth2 form).
+- Backend enforces RBAC. Set `AUTH_REQUIRED=true` to require a token on all
+  protected routers.
 
-## Endpoints (proposed, minimal but aligned)
-- Auth: POST /auth/login, POST /auth/logout, POST /auth/register? (role-based; admin-only creating users or open per policy)
-- Users: GET/PUT/PATCH /users/me, GET /admin/users (Admin)
-- Dashboard: GET /dashboard/kpis?date_from&date_to&category&state&seller&order_status
-- Analytics: /analytics/sales, /analytics/orders, /analytics/customers, /analytics/products, /analytics/sellers, /analytics/delivery (GET with filters)
-- Insights (AI): POST /insights/query with {question, filters, context_limit}; returns answer + sources (authorized data only)
-- ML: GET /ml/status (per feature: planned/training/testing/integration/available/failed), POST /ml/forecast (if available), GET /ml/segments, POST /ml/predict (sales)
-- Reports: GET /reports/export?type=csv (permission-aware)
-- Admin: /admin/system/status, /admin/data/etl/status (Admin)
+## Auth — `/api/auth`
+| Method | Path | Access | Notes |
+|---|---|---|---|
+| POST | `/login` | public | form: username, password -> `{access_token, token_type, user}` |
+| GET | `/me` | any authenticated | current user |
+| GET | `/admin/users` | admin | list users (no hashes) |
+
+## Dashboard — `/api/dashboard`
+| Method | Path | Notes |
+|---|---|---|
+| GET | `/kpis` | filters: date_from, date_to, order_status |
+| GET | `/monthly-revenue` | 24 monthly points |
+| GET | `/revenue-by-category` | top categories |
+| GET | `/orders-by-status` | order status counts |
+
+## Analytics — `/api/analytics`
+| Method | Path | Notes |
+|---|---|---|
+| GET | `/sales` | `{monthly_revenue}` |
+| GET | `/orders` | `{by_status}` |
+| GET | `/products` | `{revenue_by_category}` |
+| GET | `/customers` | planned (repeat rate, geography) |
+| GET | `/sellers` | planned |
+| GET | `/delivery` | delivery KPIs |
+
+## ML — `/api/ml`
+| Method | Path | Notes |
+|---|---|---|
+| GET | `/status` | per-feature real status + metrics |
+| GET | `/models/{name}` | full metadata for one model |
+| GET | `/forecast?periods=N` | recursive daily order forecast (1–90) |
+| GET | `/segments/customers` | cluster sizes/means |
+| GET | `/anomalies` | anomaly metrics + top days |
+| POST | `/predict/sales` | order item revenue prediction |
+
+## Insights (AI) — `/api/insights`
+| Method | Path | Notes |
+|---|---|---|
+| POST | `/query` | `{question, filters?, context_limit?}`; returns answer + sources; controlled tools only |
 
 ## Contracts
-- All responses: consistent error shape {error:{code,message,details?}}
-- Pagination where large results.
+- Consistent error shape: `{detail: ...}` (FastAPI default) or `{error:{code,message}}`.
 - Filters validated; no arbitrary SQL from client/LLM.
-- AI uses controlled backend functions (tools) only.
-- ML endpoints return 503/appropriate if not available with honest status.
+- ML endpoints return `503` if the artifact is unavailable, with honest status.
 
 ## Security
-- RBAC enforced backend; CORS restricted; input validation; no secrets exposed.
+- RBAC enforced backend; CORS restricted to the frontend origin; input validation.
+- Passwords stored as bcrypt hashes only; no secrets exposed in responses/logs.

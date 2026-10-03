@@ -30,7 +30,7 @@
 - [x] 3.5 Backend/ML/frontend requirements
 - [x] 3.6 Backend core (config, settings, logging)
 - [x] 3.7 Database setup (SQLAlchemy base, session, models init)
-- [x] 3.8 Auth & RBAC (stubs + deps)
+- [x] 3.8 Auth & RBAC implemented (JWT login, hashed passwords, role deps, auth_gate, FE login flow)
 - [x] 3.9 Dashboard endpoints stubs (real data later)
 - [x] 3.10 Frontend layout (shell, nav, theme) + routes
 - [x] 3.11 Connect FE to BE health (api service)
