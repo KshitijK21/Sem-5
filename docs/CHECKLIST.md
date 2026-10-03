@@ -43,12 +43,12 @@
 - [x] 4.5 Dashboard wired to real KPI/chart APIs (Recharts)
 
 ## Phase 5 — ML Parallel
-- [x] 5.1 ML folder structure complete
-- [x] 5.2 EDA/preprocessing (notebooks + src)
-- [x] 5.3 Baselines (stubs created)
-- [x] 5.4 Forecasting, Sales prediction, Segmentation, Anomaly (feasibility done)
-- [x] 5.5 Training/eval (light baseline run; no heavy training; metrics documented in ML_BASELINES.md)
-- [x] 5.6 ML backend interfaces + status
+- [x] 5.1 ML folder structure complete (src/{common,data_processing,forecasting,prediction,customer_segmentation,product_segmentation,anomaly_detection,evaluation})
+- [x] 5.2 Preprocessing implemented (ml/src/data_processing/build_datasets.py -> 4 processed datasets)
+- [x] 5.3 Real baselines implemented (no more stubs)
+- [x] 5.4 Forecasting, Sales prediction, Customer/Product segmentation, Anomaly all implemented
+- [x] 5.5 Training/eval run on real data; metrics in docs/ML_BASELINES.md + ml/models/*.metadata.json
+- [x] 5.6 ML backend interfaces + status (backend/app/services/ml.py, /api/ml/*)
 
 ## Phase 6 — AI Business Insights
 - [x] 6.1 Controlled data retrieval (design doc) (tools/functions)
@@ -64,8 +64,9 @@
 - [x] 7.5 Smooth transitions + reduced-motion + a11y (minimal) + reduced-motion + a11y
 
 ## Phase 8 — ML Integration
-- [ ] 8.1 Wire evaluated models
-- [ ] 8.2 Validate schemas, honest statuses
+- [x] 8.1 Wire evaluated models (forecast, predict/sales, segments, anomalies endpoints)
+- [x] 8.2 Validate schemas, honest statuses (metadata-driven; artifact-aware status)
+- [ ] 8.3 Wire ML pages in frontend to new endpoints (forecast chart, segments, anomalies)
 
 ## Phase 9 — Testing & Docs
 - [x] 9.1 Unit/integration/E2E (structure) scaffolds + tests
