@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.routes import dashboard
+
 app = FastAPI(title="Sem5 BI Platform", version="0.1.0")
 
 app.add_middleware(
@@ -10,6 +12,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(dashboard.router, prefix="/api/dashboard", tags=["dashboard"])
 
 @app.get("/health")
 def health():
