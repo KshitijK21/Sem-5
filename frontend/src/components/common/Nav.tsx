@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom'
-import { getStoredUser, logout } from '@/services/auth'
+import { getStoredUser, isAdmin, logout } from '@/services/auth'
 
 export default function Nav() {
   const user = getStoredUser()
@@ -16,6 +16,8 @@ export default function Nav() {
       <Link to="/dashboard">Dashboard</Link>
       <Link to="/analytics">Analytics</Link>
       <Link to="/models">ML Models</Link>
+      <Link to="/reports">Reports</Link>
+      {isAdmin() && <Link to="/admin">Admin</Link>}
       <Link to="/insights">AI Insights</Link>
       {user ? (
         <span className="flex items-center gap-2 text-neutral-400">

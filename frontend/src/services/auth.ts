@@ -1,6 +1,7 @@
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 
 const TOKEN_KEY = 'sem5_token'
+const REFRESH_KEY = 'sem5_refresh'
 const USER_KEY = 'sem5_user'
 
 export interface AuthUser {
@@ -11,6 +12,10 @@ export interface AuthUser {
 
 export function getToken(): string | null {
   return localStorage.getItem(TOKEN_KEY)
+}
+
+export function getRefreshToken(): string | null {
+  return localStorage.getItem(REFRESH_KEY)
 }
 
 export function getStoredUser(): AuthUser | null {
@@ -27,6 +32,10 @@ export function isAuthRequired(): boolean {
   return import.meta.env.VITE_AUTH_REQUIRED === 'true'
 }
 
+export function isAdmin(): boolean {
+  return getStoredUser()?.role === 'admin'
+}
+
 export async function login(username: string, password: string): Promise<AuthUser> {
   const body = new URLSearchParams({ username, password })
   const r = await fetch(`${API_BASE}/api/auth/login`, {
@@ -35,13 +44,33 @@ export async function login(username: string, password: string): Promise<AuthUse
     body,
   })
   if (!r.ok) throw new Error(r.status === 401 ? 'Invalid credentials' : `Login failed: ${r.status}`)
-  const data = (await r.json()) as { access_token: string; user: AuthUser }
+  const data = (await r.json()) as { access_token: string; refresh_token: string; user: AuthUser }
   localStorage.setItem(TOKEN_KEY, data.access_token)
+  localStorage.setItem(REFRESH_KEY, data.refresh_token)
   localStorage.setItem(USER_KEY, JSON.stringify(data.user))
   return data.user
 }
 
+export async function refreshAccessToken(): Promise<string | null> {
+  const refresh_token = getRefreshToken()
+  if (!refresh_token) return null
+  try {
+    const r = await fetch(`${API_BASE}/api/auth/refresh`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refresh_token }),
+    })
+    if (!r.ok) return null
+    const data = (await r.json()) as { access_token: string }
+    localStorage.setItem(TOKEN_KEY, data.access_token)
+    return data.access_token
+  } catch {
+    return null
+  }
+}
+
 export function logout() {
   localStorage.removeItem(TOKEN_KEY)
+  localStorage.removeItem(REFRESH_KEY)
   localStorage.removeItem(USER_KEY)
 }

@@ -37,6 +37,7 @@ export default function Dashboard() {
   const [monthly, setMonthly] = useState<MonthlyPoint[]>([])
   const [cats, setCats] = useState<CategoryPoint[]>([])
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading')
+  const [filters, setFilters] = useState({ date_from: '', date_to: '', order_status: '' })
 
   useEffect(() => {
     Promise.all([getKpis(), getMonthlyRevenue(), getRevenueByCategory()])
@@ -48,6 +49,23 @@ export default function Dashboard() {
       })
       .catch(() => setState('error'))
   }, [])
+
+  const applyFilters = () => {
+    const params: Record<string, string> = {}
+    if (filters.date_from) params.date_from = filters.date_from
+    if (filters.date_to) params.date_to = filters.date_to
+    if (filters.order_status) params.order_status = filters.order_status
+    getKpis(params)
+      .then(setKpis)
+      .catch(() => undefined)
+  }
+
+  const resetFilters = () => {
+    setFilters({ date_from: '', date_to: '', order_status: '' })
+    getKpis()
+      .then(setKpis)
+      .catch(() => undefined)
+  }
 
   if (state === 'loading') {
     return <div className="text-neutral-400">Loading verified KPIs from Olist data…</div>
@@ -69,6 +87,49 @@ export default function Dashboard() {
         <p className="text-sm text-neutral-500">
           Historical Olist dataset (Sep 2016 – Oct 2018). Revenue = sum of order item prices.
         </p>
+      </div>
+
+      <div className="flex flex-wrap items-end gap-3 bg-neutral-900/60 p-4 rounded-lg border border-neutral-800">
+        <label className="flex flex-col gap-1 text-xs text-neutral-400">
+          Date from
+          <input
+            type="date"
+            value={filters.date_from}
+            onChange={(e) => setFilters({ ...filters, date_from: e.target.value })}
+            className="bg-neutral-800 rounded px-2 py-1 text-sm text-neutral-100"
+          />
+        </label>
+        <label className="flex flex-col gap-1 text-xs text-neutral-400">
+          Date to
+          <input
+            type="date"
+            value={filters.date_to}
+            onChange={(e) => setFilters({ ...filters, date_to: e.target.value })}
+            className="bg-neutral-800 rounded px-2 py-1 text-sm text-neutral-100"
+          />
+        </label>
+        <label className="flex flex-col gap-1 text-xs text-neutral-400">
+          Order status
+          <select
+            value={filters.order_status}
+            onChange={(e) => setFilters({ ...filters, order_status: e.target.value })}
+            className="bg-neutral-800 rounded px-2 py-1 text-sm text-neutral-100"
+          >
+            <option value="">All</option>
+            <option value="delivered">delivered</option>
+            <option value="shipped">shipped</option>
+            <option value="canceled">canceled</option>
+            <option value="invoiced">invoiced</option>
+            <option value="processing">processing</option>
+            <option value="unavailable">unavailable</option>
+          </select>
+        </label>
+        <button onClick={applyFilters} className="bg-blue-600 hover:bg-blue-500 rounded px-3 py-1.5 text-sm">
+          Apply
+        </button>
+        <button onClick={resetFilters} className="bg-neutral-800 hover:bg-neutral-700 rounded px-3 py-1.5 text-sm">
+          Reset
+        </button>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">

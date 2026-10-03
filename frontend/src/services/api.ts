@@ -1,4 +1,4 @@
-import { getToken } from './auth'
+import { getRefreshToken, getToken, refreshAccessToken } from './auth'
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 
@@ -7,10 +7,21 @@ function authHeaders(): Record<string, string> {
   return token ? { Authorization: `Bearer ${token}` } : {}
 }
 
-async function getJson<T>(path: string): Promise<T> {
-  const r = await fetch(`${API_BASE}${path}`, { headers: authHeaders() })
+async function request<T>(path: string, init: RequestInit = {}, retry = true): Promise<T> {
+  const r = await fetch(`${API_BASE}${path}`, {
+    ...init,
+    headers: { ...(init.headers as Record<string, string>), ...authHeaders() },
+  })
+  if (r.status === 401 && retry && getRefreshToken()) {
+    const token = await refreshAccessToken()
+    if (token) return request<T>(path, init, false)
+  }
   if (!r.ok) throw new Error(`Request failed: ${r.status}`)
-  return r.json()
+  return r.json() as Promise<T>
+}
+
+function getJson<T>(path: string): Promise<T> {
+  return request<T>(path)
 }
 
 export function health() {
@@ -96,14 +107,12 @@ export function getAnalyticsSellers() {
 
 // ---- ML ----
 
-async function postJson<T>(path: string, body: unknown): Promise<T> {
-  const r = await fetch(`${API_BASE}${path}`, {
+function postJson<T>(path: string, body: unknown): Promise<T> {
+  return request<T>(path, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   })
-  if (!r.ok) throw new Error(`Request failed: ${r.status}`)
-  return r.json()
 }
 
 export interface MlModel {
@@ -185,4 +194,62 @@ export interface InsightsResponse {
 
 export function queryInsights(question: string, context_limit = 20) {
   return postJson<InsightsResponse>('/api/insights/query', { question, context_limit })
+}
+
+// ---- Reports ----
+
+export async function downloadReport(report: string, params: Record<string, string> = {}) {
+  const qs = new URLSearchParams({ report, ...params }).toString()
+  const r = await fetch(`${API_BASE}/api/reports/export?${qs}`, { headers: authHeaders() })
+  if (!r.ok) throw new Error(`Export failed: ${r.status}`)
+  const blob = await r.blob()
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `${report}.csv`
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
+// ---- Admin ----
+
+export interface SystemStatus {
+  app: string
+  version: string
+  env: string
+  auth_required: boolean
+  database: string
+  python: string
+  platform: string
+  uptime_seconds: number
+}
+
+export function getSystemStatus() {
+  return getJson<SystemStatus>('/api/admin/system/status')
+}
+
+export interface EtlStatus {
+  loaded: boolean
+  tables: Record<string, number | null>
+  olist_dir: string
+}
+
+export function getEtlStatus() {
+  return getJson<EtlStatus>('/api/admin/data/etl/status')
+}
+
+// ---- Users ----
+
+export interface PublicUser {
+  id: number
+  username: string
+  role: string
+}
+
+export function getMe() {
+  return getJson<{ user: PublicUser }>('/api/users/me')
+}
+
+export function listUsers() {
+  return getJson<{ users: PublicUser[] }>('/api/users')
 }
