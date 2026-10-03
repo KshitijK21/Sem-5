@@ -66,7 +66,8 @@
 ## Phase 8 — ML Integration
 - [x] 8.1 Wire evaluated models (forecast, predict/sales, segments, anomalies endpoints)
 - [x] 8.2 Validate schemas, honest statuses (metadata-driven; artifact-aware status)
-- [ ] 8.3 Wire ML pages in frontend to new endpoints (forecast chart, segments, anomalies)
+- [x] 8.3 Wire ML pages in frontend to new endpoints (forecast chart, segments, anomalies, predict form) — /models
+- [x] 8.4 Analytics page wired to real /api/analytics series — /analytics
 
 ## Phase 9 — Testing & Docs
 - [x] 9.1 Unit/integration/E2E (structure) scaffolds + tests

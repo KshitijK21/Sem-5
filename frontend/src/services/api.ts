@@ -59,3 +59,109 @@ export interface StatusPoint {
 export function getOrdersByStatus() {
   return getJson<{ series: StatusPoint[] }>('/api/dashboard/orders-by-status')
 }
+
+// ---- Analytics ----
+
+export function getAnalyticsSales() {
+  return getJson<{ monthly_revenue: MonthlyPoint[] }>('/api/analytics/sales')
+}
+
+export function getAnalyticsOrders() {
+  return getJson<{ by_status: StatusPoint[] }>('/api/analytics/orders')
+}
+
+export function getAnalyticsProducts() {
+  return getJson<{ revenue_by_category: CategoryPoint[] }>('/api/analytics/products')
+}
+
+export interface PlannedResponse {
+  status: string
+  message: string
+}
+
+export function getAnalyticsCustomers() {
+  return getJson<PlannedResponse>('/api/analytics/customers')
+}
+
+export function getAnalyticsSellers() {
+  return getJson<PlannedResponse>('/api/analytics/sellers')
+}
+
+// ---- ML ----
+
+async function postJson<T>(path: string, body: unknown): Promise<T> {
+  const r = await fetch(`${API_BASE}${path}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  })
+  if (!r.ok) throw new Error(`Request failed: ${r.status}`)
+  return r.json()
+}
+
+export interface MlModel {
+  name: string
+  algorithm: string | null
+  trained_at: string | null
+  metrics: Record<string, unknown> | null
+  artifact_available: boolean
+}
+
+export interface MlFeature {
+  name: string
+  status: string
+  models: MlModel[]
+}
+
+export function getMlStatus() {
+  return getJson<{ features: MlFeature[] }>('/api/ml/status')
+}
+
+export interface ForecastPoint {
+  date: string
+  orders: number
+}
+
+export function getForecast(periods = 30) {
+  return getJson<{ history_tail: ForecastPoint[]; forecast: ForecastPoint[] }>(
+    `/api/ml/forecast?periods=${periods}`,
+  )
+}
+
+export interface SegmentMetrics {
+  k: number
+  silhouette: number
+  cluster_sizes: Record<string, number>
+  cluster_means: Record<string, Record<string, number>>
+}
+
+export function getCustomerSegments() {
+  return getJson<{ metrics: SegmentMetrics; status: string }>('/api/ml/segments/customers')
+}
+
+export interface AnomalyMetrics {
+  contamination: number
+  n_days: number
+  n_anomalies: number
+  top_anomalies: Array<{ date: string; orders: number; revenue: number; score: number }>
+}
+
+export function getAnomalies() {
+  return getJson<{ metrics: AnomalyMetrics; status: string }>('/api/ml/anomalies')
+}
+
+export interface SalesPredictInput {
+  purchase_month: number
+  purchase_weekday: number
+  purchase_hour: number
+  n_items: number
+  customer_state: string
+  product_category_name: string
+}
+
+export function predictSales(input: SalesPredictInput) {
+  return postJson<{ predicted_item_revenue: number; currency: string }>(
+    '/api/ml/predict/sales',
+    input,
+  )
+}
