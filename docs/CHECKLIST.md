@@ -70,8 +70,8 @@
 - [x] 8.4 Analytics page wired to real /api/analytics series — /analytics
 
 ## Phase 9 — Testing & Docs
-- [x] 9.1 Unit/integration/E2E (structure) scaffolds + tests
-- [ ] 9.2 Run tests, fix
+- [x] 9.1 Backend tests written (auth, health, dashboard, ml) + dev requirements
+- [x] 9.2 Run tests, fix (9 passed via pytest)
 - [x] 9.3 Complete docs (core docs added), setup verification
 
 ## Phase 10 — GitHub Completion
