@@ -14,4 +14,11 @@ class Settings(BaseSettings):
     AUTH_ANALYST_PASSWORD: str = os.getenv("AUTH_ANALYST_PASSWORD", "analyst123")
     AUTH_VIEWER_PASSWORD: str = os.getenv("AUTH_VIEWER_PASSWORD", "viewer123")
 
+    # AI assistant (provider-agnostic; Ollama preferred)
+    ENABLE_LLM_ASSISTANT: bool = os.getenv("ENABLE_LLM_ASSISTANT", "false").lower() in {"1", "true", "yes"}
+    OLLAMA_BASE_URL: str = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+    OLLAMA_MODEL: str = os.getenv("OLLAMA_MODEL", "llama3.2")
+    LLM_PROVIDER: str = os.getenv("LLM_PROVIDER", "ollama")
+    LLM_TIMEOUT_SECONDS: int = int(os.getenv("LLM_TIMEOUT_SECONDS", "20"))
+
 settings = Settings()
