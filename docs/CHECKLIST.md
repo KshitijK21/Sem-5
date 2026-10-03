@@ -54,7 +54,7 @@
 - [x] 6.1 Controlled data retrieval (design doc) (tools/functions)
 - [ ] 6.2 LLM integration (Ollama preferred, provider-agnostic)
 - [ ] 6.3 Permission-aware context, fallbacks
-- [ ] 6.4 Assistant UI + examples
+- [x] 6.4 Assistant UI (stub) + examples
 
 ## Phase 7 — Premium Interactions
 - [x] 7.1 Cursor-responsive lighting (design) lighting
@@ -75,6 +75,7 @@
 ## Phase 10 — GitHub Completion
 - [ ] 10.1 Final checks (secrets/dataset)
 - [ ] 10.2 Commits, push, report
+
 
 
 
