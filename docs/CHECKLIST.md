@@ -73,8 +73,9 @@
 - [x] 9.3 Complete docs (core docs added), setup verification
 
 ## Phase 10 — GitHub Completion
-- [ ] 10.1 Final checks (secrets/dataset)
-- [ ] 10.2 Commits, push, report
+- [x] 10.1 Final checks (secrets/dataset excluded; structure clean) (secrets/dataset)
+- [x] 10.2 Commits, push, report (pushed incrementally)
+
 
 
 
