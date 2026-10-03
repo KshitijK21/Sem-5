@@ -78,6 +78,18 @@
 - [x] 10.1 Final checks (secrets/dataset excluded; structure clean) (secrets/dataset)
 - [x] 10.2 Commits, push, report (pushed incrementally)
 
+## Phase 11 — Extended (no "optional" left)
+- [x] 11.1 DB-backed users (app_user table) with seeded admin/analyst/viewer
+- [x] 11.2 Refresh tokens (access + refresh, `type` claim) + `/api/auth/refresh`
+- [x] 11.3 User management API (`/api/users`: me, password, list, role)
+- [x] 11.4 CSV reports API (`/api/reports/export`) — permission-aware
+- [x] 11.5 Admin API (`/api/admin/system/status`, `/api/admin/data/etl/status`)
+- [x] 11.6 Frontend `/reports` and `/admin` pages + nav links (admin-only)
+- [x] 11.7 Dashboard date-range + order-status filters
+- [x] 11.8 Frontend API client: auto-refresh on 401
+- [x] 11.9 Tests expanded: backend 22, ML pipeline 8, frontend 5
+- [x] 11.10 Docs updated (API, RBAC, TESTING, STATUS, .env.example)
+
 
 
 

@@ -9,9 +9,33 @@
 ## Auth — `/api/auth`
 | Method | Path | Access | Notes |
 |---|---|---|---|
-| POST | `/login` | public | form: username, password -> `{access_token, token_type, user}` |
+| POST | `/login` | public | form: username, password -> `{access_token, refresh_token, token_type, user}` |
+| POST | `/refresh` | public (refresh token) | body `{refresh_token}` -> new access token |
 | GET | `/me` | any authenticated | current user |
+| POST | `/register` | admin | create a user `{username, password, role}` -> 201 |
 | GET | `/admin/users` | admin | list users (no hashes) |
+
+## Users — `/api/users`
+| Method | Path | Access | Notes |
+|---|---|---|---|
+| GET | `/me` | any authenticated | current profile |
+| PATCH | `/me` | any authenticated | change own password (`current_password`, `new_password`) |
+| GET | `""` | admin | list all users |
+| PATCH | `/{username}/role` | admin | change a user's role |
+
+## Reports (CSV export) — `/api/reports`
+| Method | Path | Access | Notes |
+|---|---|---|---|
+| GET | `/export?report=<name>` | analyst+ (kpis: viewer+) | streams `text/csv` |
+
+Supported `report` values: `kpis`, `monthly_revenue`, `revenue_by_category`,
+`orders_by_status`. Unknown reports return `404`.
+
+## Admin — `/api/admin`
+| Method | Path | Access | Notes |
+|---|---|---|---|
+| GET | `/system/status` | admin | app/version/database/uptime summary |
+| GET | `/data/etl/status` | admin | warehouse row counts + `loaded` flag |
 
 ## Dashboard — `/api/dashboard`
 | Method | Path | Notes |
