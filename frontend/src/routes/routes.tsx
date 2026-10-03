@@ -1,30 +1,44 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import Landing from '@/pages/Landing'
-import Login from '@/pages/Login'
 import AppLayout from '@/components/layout/AppLayout'
 import RequireAuth from '@/components/RequireAuth'
-import Dashboard from '@/pages/Dashboard'
-import Analytics from '@/pages/Analytics'
-import Models from '@/pages/Models'
-import Reports from '@/pages/Reports'
-import Admin from '@/pages/Admin'
-import Insights from '@/pages/Insights'
 
 export const router = createBrowserRouter([
   { path: '/', element: <Landing /> },
-  { path: '/login', element: <Login /> },
+  {
+    path: '/login',
+    lazy: async () => ({ Component: (await import('@/pages/Login')).default }),
+  },
   {
     element: <RequireAuth />,
     children: [
       {
         element: <AppLayout />,
         children: [
-          { path: '/dashboard', element: <Dashboard /> },
-          { path: '/analytics', element: <Analytics /> },
-          { path: '/models', element: <Models /> },
-          { path: '/reports', element: <Reports /> },
-          { path: '/admin', element: <Admin /> },
-          { path: '/insights', element: <Insights /> },
+          {
+            path: '/dashboard',
+            lazy: async () => ({ Component: (await import('@/pages/Dashboard')).default }),
+          },
+          {
+            path: '/analytics',
+            lazy: async () => ({ Component: (await import('@/pages/Analytics')).default }),
+          },
+          {
+            path: '/models',
+            lazy: async () => ({ Component: (await import('@/pages/Models')).default }),
+          },
+          {
+            path: '/reports',
+            lazy: async () => ({ Component: (await import('@/pages/Reports')).default }),
+          },
+          {
+            path: '/admin',
+            lazy: async () => ({ Component: (await import('@/pages/Admin')).default }),
+          },
+          {
+            path: '/insights',
+            lazy: async () => ({ Component: (await import('@/pages/Insights')).default }),
+          },
           { path: '*', element: <Navigate to="/dashboard" replace /> },
         ],
       },
