@@ -65,3 +65,46 @@ class ProviderFactory:
                 settings.OLLAMA_BASE_URL, settings.OLLAMA_MODEL, settings.LLM_TIMEOUT_SECONDS
             )
         return DisabledProvider()
+
+
+def provider_status() -> dict:
+    """Report the configured assistant provider and whether it is reachable.
+
+    Used by `GET /api/insights/status`. Never raises — a failed probe is
+    reported as `reachable: false` so the UI can explain the fallback.
+    """
+    if not settings.ENABLE_LLM_ASSISTANT:
+        return {
+            "enabled": False,
+            "provider": "disabled",
+            "model": None,
+            "reachable": False,
+            "fallback": "deterministic data-grounded summary",
+        }
+
+    if settings.LLM_PROVIDER != "ollama":
+        return {
+            "enabled": True,
+            "provider": settings.LLM_PROVIDER,
+            "model": None,
+            "reachable": False,
+            "fallback": "deterministic data-grounded summary",
+        }
+
+    reachable = False
+    try:
+        import httpx
+
+        r = httpx.get(f"{settings.OLLAMA_BASE_URL.rstrip('/')}/api/tags", timeout=3)
+        reachable = r.status_code == 200
+    except Exception:
+        reachable = False
+
+    return {
+        "enabled": True,
+        "provider": "ollama",
+        "model": settings.OLLAMA_MODEL,
+        "base_url": settings.OLLAMA_BASE_URL,
+        "reachable": reachable,
+        "fallback": "deterministic data-grounded summary",
+    }

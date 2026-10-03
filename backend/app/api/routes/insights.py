@@ -3,7 +3,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from app.ai_assistant import context as ctx
-from app.ai_assistant.provider import ProviderFactory
+from app.ai_assistant.provider import ProviderFactory, provider_status
 from app.api.deps import get_optional_user
 from app.database.deps import get_db
 
@@ -13,6 +13,11 @@ router = APIRouter()
 class QueryRequest(BaseModel):
     question: str = Field(..., min_length=1, max_length=500)
     context_limit: int = Field(20, ge=1, le=50)
+
+
+@router.get("/status")
+def insights_status():
+    return provider_status()
 
 
 @router.post("/query")

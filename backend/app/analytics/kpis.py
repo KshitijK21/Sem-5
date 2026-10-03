@@ -94,11 +94,22 @@ def get_kpis(
     }
 
 
+def month_expr(db: Session, column: str = "purchase_date") -> str:
+    """Return a dialect-appropriate year-month expression for `column`."""
+    dialect = db.get_bind().dialect.name
+    if dialect == "postgresql":
+        return f"to_char({column}, 'YYYY-MM')"
+    if dialect in {"mysql", "mariadb"}:
+        return f"date_format({column}, '%Y-%m')"
+    return f"strftime('%Y-%m', {column})"
+
+
 def monthly_revenue(db: Session, limit: int = 24) -> list[dict]:
+    period = month_expr(db)
     sql = text(
-        """
+        f"""
         SELECT
-            strftime('%Y-%m', purchase_date) AS period,
+            {period} AS period,
             COUNT(*) AS orders,
             COALESCE(SUM(item_revenue), 0) AS revenue
         FROM fact_orders

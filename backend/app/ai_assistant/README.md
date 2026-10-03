@@ -14,6 +14,21 @@ Provider-agnostic LLM assistant grounded strictly in warehouse data.
 4. If the LLM is unavailable, the endpoint returns a deterministic, data-grounded
    summary (`status: llm_unavailable`) instead of failing.
 
+## Status
+`GET /api/insights/status` returns the configured provider, model, whether the
+provider is `reachable`, and the fallback behaviour. It never raises — a failed
+probe is reported as `reachable: false`.
+
+## Live run (local Ollama)
+```powershell
+ollama pull llama3.2
+ollama serve                      # or run the Ollama desktop app
+# set ENABLE_LLM_ASSISTANT=true in backend/.env
+cd backend; python -m uvicorn app.main:app --reload
+```
+Confirm `reachable: true` at `/api/insights/status` before asking questions.
+With the flag off (default), responses come from the deterministic fallback.
+
 ## Config (env)
 - `ENABLE_LLM_ASSISTANT` (default false)
 - `LLM_PROVIDER` (default `ollama`)
