@@ -57,7 +57,7 @@
 - [ ] 6.4 Assistant UI + examples
 
 ## Phase 7 — Premium Interactions
-- [ ] 7.1 Cursor-responsive lighting
+- [x] 7.1 Cursor-responsive lighting (design) lighting
 - [ ] 7.2 Hover cards
 - [ ] 7.3 Chart animations
 - [ ] 7.4 Scroll-triggered
@@ -75,6 +75,7 @@
 ## Phase 10 — GitHub Completion
 - [ ] 10.1 Final checks (secrets/dataset)
 - [ ] 10.2 Commits, push, report
+
 
 
 
