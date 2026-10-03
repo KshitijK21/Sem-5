@@ -3,6 +3,9 @@ frontend/node_modules/
 frontend/dist/
 frontend/.vite/
 frontend/.cache/
+frontend/*.tsbuildinfo
+frontend/vite.config.js
+frontend/vite.config.d.ts
 
 # Python
 backend/.venv/
@@ -16,6 +19,11 @@ ml/src/**/__pycache__/
 # Env
 .env
 .env.local
+
+# Local dev database (SQLite)
+backend/*.db
+backend/*.sqlite
+*.db
 
 # Data/model artifacts
 ml/data/processed/

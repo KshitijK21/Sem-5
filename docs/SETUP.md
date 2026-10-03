@@ -14,7 +14,17 @@
 cd frontend && npm install && npm run dev (http://localhost:5173)
 
 ## Backend
-cd backend && pip install -r requirements.txt && uvicorn app.main:app --reload --port 8000
+cd backend && pip install -r requirements.txt
+
+## Load data (ETL) - run once after install
+cd backend && python -m app.services.etl
+# Reads from %USERPROFILE%\Downloads\olist and loads the warehouse into
+# SQLite by default (backend/sem5.db). Set DATABASE_URL for PostgreSQL.
+
+## Run backend
+cd backend && uvicorn app.main:app --reload --port 8000
+# Health: http://localhost:8000/health
+# Docs:   http://localhost:8000/docs
 
 ## ML
 cd ml && pip install -r requirements.txt
