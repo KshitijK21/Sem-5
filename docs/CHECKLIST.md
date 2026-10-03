@@ -70,11 +70,12 @@
 ## Phase 9 — Testing & Docs
 - [x] 9.1 Unit/integration/E2E (structure) scaffolds + tests
 - [ ] 9.2 Run tests, fix
-- [ ] 9.3 Complete docs, setup verification
+- [x] 9.3 Complete docs (core docs added), setup verification
 
 ## Phase 10 — GitHub Completion
 - [ ] 10.1 Final checks (secrets/dataset)
 - [ ] 10.2 Commits, push, report
+
 
 
 
