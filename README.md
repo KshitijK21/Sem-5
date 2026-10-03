@@ -1,32 +1,50 @@
 # AI-Powered Business Intelligence and Predictive Analytics Platform (sem-5)
 
-Semester 5 academic project: AI, Data Warehousing & Mining, Software Engineering integrated into one working platform. Uses Olist Brazilian E-Commerce dataset.
+Semester 5 academic project: AI, Data Warehousing & Mining, and Software
+Engineering integrated into one working platform. Uses the Olist Brazilian
+E-Commerce dataset.
 
-## Quick Status
-- Local repo path: %USERPROFILE%\Downloads\sem-5
-- Dataset: %USERPROFILE%\Downloads\olist (9 CSVs)
-- Tools: git, node, python, pip, docker available; gh CLI not installed (auth blocked)
-- Phase: 1-2 in progress (setup + dataset inspection)
+## Quick Status — complete
+- Local repo: `%USERPROFILE%\Downloads\sem-5`
+- Dataset: `%USERPROFILE%\Downloads\olist` (9 CSVs, never committed)
+- Tools: git, node, python, pip, docker. `gh` CLI intentionally not used.
+- Phase: all master-prompt phases done (see `docs/CHECKLIST.md`); live status in
+  `docs/STATUS.md`.
 
-## Stack (planned)
+## Stack (delivered)
 - Frontend: React + TypeScript + Vite + TailwindCSS + Recharts + Framer Motion
-- Backend: FastAPI + Pydantic + SQLAlchemy
-- DB/WH: PostgreSQL (star schema)
-- ML: pandas, numpy, scikit-learn, matplotlib, statsmodels (as needed)
-- AI: Local LLM via Ollama (fallback: provider-agnostic)
+  (routes code-split; ESLint configured; Vitest + Playwright tests)
+- Backend: FastAPI + Pydantic + SQLAlchemy (JWT auth/RBAC, CSVs, admin APIs)
+- DB/WH: SQLite for dev, PostgreSQL as documented target (star schema)
+- ML: pandas, numpy, scikit-learn, joblib (5 features; real metrics)
+- AI: provider-agnostic LLM (Ollama preferred) with deterministic fallback
 
 ## Setup (local)
-1. Ensure dataset at %USERPROFILE%\Downloads\olist
-2. Create .env from .env.example
-3. Install frontend deps: cd frontend && npm install
-4. Install backend deps: cd backend && pip install -r requirements.txt (or use venv)
-5. Install ml deps: cd ml && pip install -r requirements.txt
-6. Start services (docker-compose or run individually)
+1. Ensure the dataset is at `%USERPROFILE%\Downloads\olist`.
+2. Copy `.env.example` to `.env` (optional; sensible dev defaults exist).
+3. Frontend: `cd frontend && npm install`
+4. Backend: `cd backend && pip install -r requirements.txt`
+5. ML: `cd ml && pip install -r requirements.txt`
+6. Build the warehouse: `cd backend && python -m app.services.etl`
+7. Train the models: `cd ml && python run_all.py`
+8. Run the API: `cd backend && python -m uvicorn app.main:app --reload`
+9. Run the UI: `cd frontend && npm run dev`
+
+## Testing
+```powershell
+cd backend; python -m pytest -q          # 26 API tests
+cd ml;      python -m pytest -q          # 8 pipeline tests
+cd frontend; npm test                    # 5 component tests (Vitest)
+cd frontend; npm run e2e                 # 3 browser E2E (Playwright)
+cd frontend; npm run lint; npm run build
+```
 
 ## Docs
-See docs/ (SRS, ARCHITECTURE, DATABASE_DESIGN, ML_DOCUMENTATION, API_DOCUMENTATION, RBAC, TESTING, SETUP, PROJECT_PLAN, DECISIONS)
+See `docs/` (SRS, ARCHITECTURE, DATABASE_DESIGN, KPIs, ML_DOCUMENTATION,
+API_DOCUMENTATION, RBAC, TESTING, POSTGRES, SETUP, PROJECT_PLAN, DECISIONS,
+STATUS, CHECKLIST).
 
 ## Notes
-- ML and website developed in parallel.
+- ML and website were developed in parallel and integrated via documented interfaces.
 - AI assistant uses authorized backend data only (no arbitrary SQL).
-- No secrets committed.
+- No secrets or raw dataset committed.

@@ -70,9 +70,10 @@
 - [x] 8.4 Analytics page wired to real /api/analytics series — /analytics
 
 ## Phase 9 — Testing & Docs
-- [x] 9.1 Backend tests written (auth, health, dashboard, ml) + dev requirements
-- [x] 9.2 Run tests, fix (9 passed via pytest)
+- [x] 9.1 Backend tests written (auth, users, reports, admin, health, dashboard, ml) + dev requirements
+- [x] 9.2 Run tests, fix (26 backend + 8 ML passed)
 - [x] 9.3 Complete docs (core docs added), setup verification
+- [x] 9.4 Frontend component tests (Vitest, 5) + browser E2E (Playwright, 3)
 
 ## Phase 10 — GitHub Completion
 - [x] 10.1 Final checks (secrets/dataset excluded; structure clean) (secrets/dataset)
@@ -87,8 +88,14 @@
 - [x] 11.6 Frontend `/reports` and `/admin` pages + nav links (admin-only)
 - [x] 11.7 Dashboard date-range + order-status filters
 - [x] 11.8 Frontend API client: auto-refresh on 401
-- [x] 11.9 Tests expanded: backend 22, ML pipeline 8, frontend 5
+- [x] 11.9 Tests expanded: backend 26, ML pipeline 8, frontend 5, E2E 3
 - [x] 11.10 Docs updated (API, RBAC, TESTING, STATUS, .env.example)
+- [x] 11.11 Postgres-ready dialect-aware SQL (`month_expr`) + docs/POSTGRES.md
+- [x] 11.12 LLM provider status endpoint (`GET /api/insights/status`)
+- [x] 11.13 ESLint configured (flat config + typescript-eslint) + `npm run lint`
+- [x] 11.14 Route code-splitting + vendor/charts/motion chunks (no >500 kB chunk)
+- [x] 11.15 Playwright E2E (3) — fixed a nested-<Router> runtime bug
+- [x] 11.16 PROJECT_PLAN.md synced to completion
 
 
 

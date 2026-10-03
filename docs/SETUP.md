@@ -26,5 +26,14 @@ cd backend && uvicorn app.main:app --reload --port 8000
 # Health: http://localhost:8000/health
 # Docs:   http://localhost:8000/docs
 
-## ML
+## ML - install and train
 cd ml && pip install -r requirements.txt
+python run_all.py
+# Builds processed datasets, trains 5 models, writes metrics metadata to
+# ml/models/*.metadata.json (large .joblib artifacts are gitignored).
+
+## Tests / quality
+cd backend  && python -m pytest -q                    # 26 API tests
+cd ml       && python -m pytest -q                    # 8 pipeline tests
+cd frontend && npm test && npm run lint && npm run build
+cd frontend && npm run e2e:install && npm run e2e     # 3 browser E2E tests

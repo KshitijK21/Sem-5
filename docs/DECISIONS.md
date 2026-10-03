@@ -6,7 +6,7 @@
   - Development default is SQLite (`DATABASE_URL` unset -> `sqlite:///./sem5.db`) so the project runs on a
     student laptop with zero setup. Set `DATABASE_URL` to PostgreSQL to use the production target.
   - ETL is idempotent (clears and reloads warehouse tables) and rebuilds tables via SQLAlchemy.
-  - Note: the monthly-revenue query uses SQLite `strftime`; a Postgres port would use `to_char` (documented).
+  - Date aggregation is dialect-aware (`app/analytics/kpis.py:month_expr`): SQLite `strftime`, PostgreSQL `to_char`, MySQL `date_format`. Migration guide: `docs/POSTGRES.md`.
 - ML: sklearn + pandas/numpy; statsmodels if time-series needs; serialize models (joblib/pkl). 
 - AI: Ollama (local) preferred; provider-agnostic interface; no arbitrary SQL; permission-aware context.
 - Infra: Docker Compose optional but compatible; avoid unnecessary complexity.
@@ -27,3 +27,9 @@
 
 ## Parallel dev
 - ML starts in P2 alongside contracts; interfaces fixed early. Website usable without ML/LLM.
+
+## Testing / tooling
+- Backend: pytest + `fastapi.testclient`. ML: pytest on synthetic DataFrames. Frontend: Vitest + Testing Library. E2E: Playwright against a real backend + Vite dev server.
+- ESLint (flat config: typescript-eslint + react-hooks) enforced via `npm run lint`.
+- Routes are lazy-loaded and vendor/charts/motion are split via `manualChunks` to keep the initial bundle small.
+- E2E caught a real nested-`<Router>` runtime bug that `tsc`/build and unit tests missed — browser-level coverage is now part of the suite.

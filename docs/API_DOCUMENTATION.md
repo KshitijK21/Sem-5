@@ -69,6 +69,7 @@ Supported `report` values: `kpis`, `monthly_revenue`, `revenue_by_category`,
 | Method | Path | Notes |
 |---|---|---|
 | POST | `/query` | `{question, filters?, context_limit?}`; returns answer + sources; controlled tools only |
+| GET | `/status` | configured provider, model, `reachable` flag, fallback note |
 
 ## Contracts
 - Consistent error shape: `{detail: ...}` (FastAPI default) or `{error:{code,message}}`.

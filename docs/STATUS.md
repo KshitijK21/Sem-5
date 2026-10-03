@@ -29,12 +29,21 @@
 - Admin API (system status, ETL status) + `/reports` and `/admin` frontend pages.
 - Dashboard date-range and order-status filters.
 
+## Quality / tooling (done)
+- Dialect-aware warehouse SQL (`month_expr`) with a Postgres migration guide
+  (`docs/POSTGRES.md`).
+- LLM provider status endpoint (`GET /api/insights/status`).
+- ESLint (flat config) enforcing `npm run lint`.
+- Route-level code-splitting + vendor/charts/motion chunks (no >500 kB chunk).
+
 ## Tests (done)
-- Backend: 22 passing (auth, refresh, users, reports, admin, health, dashboard,
-  ml, insights).
+- Backend: 26 passing (auth, refresh, users, reports, admin, health, dashboard,
+  dialect, ml, insights).
 - ML: 8 passing (feature builders, metrics, metadata).
-- Frontend: 5 passing (auth service, RequireAuth) + build green (`npm run build`).
+- Frontend: 5 passing (auth service, RequireAuth); lint clean; build green.
+- E2E: 3 passing (Playwright: landing, login form, real admin sign-in →
+  dashboard). E2E surfaced and fixed a nested-`<Router>` runtime bug.
 
 ## Next
-- Optional polish only: ESLint config, code-splitting to reduce bundle size,
-  Postgres migration docs. Core scope complete.
+- None required. Optional future work: CI workflow, Docker Compose for
+  one-command startup, live Ollama integration test.
