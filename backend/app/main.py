@@ -2,7 +2,7 @@ from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.deps import auth_gate
-from app.api.routes import dashboard, ml, insights, analytics, auth
+from app.api.routes import dashboard, ml, insights, analytics, auth, users, reports, admin
 
 app = FastAPI(title="Sem5 BI Platform", version="0.1.0")
 
@@ -21,6 +21,9 @@ app.include_router(ml.router, prefix="/api/ml", tags=["ml"], dependencies=_prote
 app.include_router(insights.router, prefix="/api/insights", tags=["insights"], dependencies=_protected)
 app.include_router(analytics.router, prefix="/api/analytics", tags=["analytics"], dependencies=_protected)
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
+app.include_router(users.router, prefix="/api/users", tags=["users"], dependencies=_protected)
+app.include_router(reports.router, prefix="/api/reports", tags=["reports"], dependencies=_protected)
+app.include_router(admin.router, prefix="/api/admin", tags=["admin"], dependencies=_protected)
 
 @app.get("/health")
 def health():
