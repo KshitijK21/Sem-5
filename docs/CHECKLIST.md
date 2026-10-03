@@ -28,12 +28,12 @@
 - [x] 3.3 Frontend Vite/TS/Tailwind config
 - [x] 3.4 Backend FastAPI skeleton (/health)
 - [x] 3.5 Backend/ML/frontend requirements
-- [ ] 3.6 Backend core (config, settings, logging)
-- [ ] 3.7 Database setup (SQLAlchemy base, session, models init)
+- [x] 3.6 Backend core (config, settings, logging)
+- [x] 3.7 Database setup (SQLAlchemy base, session, models init)
 - [ ] 3.8 Auth & RBAC (models, schemas, routes, deps)
-- [ ] 3.9 Dashboard endpoints stubs (real data later)
-- [ ] 3.10 Frontend layout (shell, nav, theme) + routes
-- [ ] 3.11 Connect FE to BE health (api service)
+- [x] 3.9 Dashboard endpoints stubs (real data later)
+- [x] 3.10 Frontend layout (shell, nav, theme) + routes
+- [x] 3.11 Connect FE to BE health (api service)
 
 ## Phase 4 — Warehouse & Descriptive Analytics
 - [ ] 4.1 ETL: read external olist, validate, clean, load (scripts + services)
@@ -43,8 +43,8 @@
 - [ ] 4.5 Dashboard pages + filters + charts (Recharts)
 
 ## Phase 5 — ML Parallel
-- [ ] 5.1 ML folder structure complete
-- [ ] 5.2 EDA/preprocessing (notebooks + src)
+- [x] 5.1 ML folder structure complete
+- [x] 5.2 EDA/preprocessing (notebooks + src)
 - [ ] 5.3 Baselines
 - [ ] 5.4 Forecasting, Sales prediction, Segmentation, Anomaly (feasibility)
 - [ ] 5.5 Training/eval, model artifacts, metadata
@@ -75,3 +75,4 @@
 ## Phase 10 — GitHub Completion
 - [ ] 10.1 Final checks (secrets/dataset)
 - [ ] 10.2 Commits, push, report
+
