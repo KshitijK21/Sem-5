@@ -48,7 +48,7 @@
 - [x] 5.3 Baselines (stubs created)
 - [ ] 5.4 Forecasting, Sales prediction, Segmentation, Anomaly (feasibility)
 - [x] 5.5 Training/eval (schema/docs only; no heavy training yet), model artifacts, metadata
-- [ ] 5.6 ML backend interfaces + status
+- [x] 5.6 ML backend interfaces + status + status
 
 ## Phase 6 — AI Business Insights
 - [ ] 6.1 Controlled data retrieval (tools/functions)
@@ -75,6 +75,7 @@
 ## Phase 10 — GitHub Completion
 - [ ] 10.1 Final checks (secrets/dataset)
 - [ ] 10.2 Commits, push, report
+
 
 
 
