@@ -172,3 +172,17 @@ export function predictSales(input: SalesPredictInput) {
     input,
   )
 }
+
+// ---- AI Insights ----
+
+export interface InsightsResponse {
+  answer: string
+  sources: string[]
+  status: string
+  provider: string | null
+  role: string
+}
+
+export function queryInsights(question: string, context_limit = 20) {
+  return postJson<InsightsResponse>('/api/insights/query', { question, context_limit })
+}

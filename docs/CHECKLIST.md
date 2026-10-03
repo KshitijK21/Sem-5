@@ -51,10 +51,10 @@
 - [x] 5.6 ML backend interfaces + status (backend/app/services/ml.py, /api/ml/*)
 
 ## Phase 6 — AI Business Insights
-- [x] 6.1 Controlled data retrieval (design doc) (tools/functions)
-- [x] 6.2 LLM integration (provider-agnostic stub) (Ollama preferred, provider-agnostic)
-- [x] 6.3 Permission-aware context, fallbacks (design + stub)
-- [x] 6.4 Assistant UI (stub) + examples
+- [x] 6.1 Controlled data retrieval implemented (ai_assistant/context.py; role-scoped, no arbitrary SQL)
+- [x] 6.2 LLM integration implemented (provider-agnostic: Ollama + Disabled)
+- [x] 6.3 Permission-aware context + deterministic fallback (llm_unavailable summary)
+- [x] 6.4 Assistant UI implemented (/insights page with examples)
 
 ## Phase 7 — Premium Interactions
 - [x] 7.1 Cursor-responsive lighting (design) lighting

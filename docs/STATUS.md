@@ -4,23 +4,27 @@
 - Checklist: see docs/CHECKLIST.md
 
 ## Warehouse (done)
-- ETL loaded real Olist data into the star schema; verified KPIs in docs/KPIs.md.
-- Dashboard wired to real KPI/chart APIs.
+- Real Olist ETL loaded into the star schema; verified KPIs in docs/KPIs.md.
+- Dashboard + Analytics pages wired to real KPI/chart APIs.
 
 ## ML (done, parallel track)
-- Datasets built (ml/data/processed, gitignored).
-- 5 features trained and evaluated on real data:
-  - sales_forecast (LinearRegression, beats seasonal-naive baseline)
-  - sales_prediction (best of LinearRegression / RandomForest)
-  - customer_segmentation (KMeans, k=2, silhouette 0.686)
-  - product_segmentation (KMeans, k=4, silhouette 0.480)
-  - anomaly_detection (IsolationForest; flags Black Friday 2017-11-24)
-- Metrics: docs/ML_BASELINES.md + ml/models/*.metadata.json.
+- 5 features trained/evaluated on real data; metrics in docs/ML_BASELINES.md.
 - Backend serves models via /api/ml (status, forecast, segments, anomalies, predict/sales).
-- Artifacts gitignored (reproducible via `cd ml && python run_all.py`).
+- Frontend /models page: status cards, forecast chart, segment chart, anomaly table, predict form.
+
+## Auth / RBAC (done)
+- JWT login, bcrypt-hashed users (admin/analyst/viewer), role deps, auth_gate.
+- Frontend login page, protected routes (VITE_AUTH_REQUIRED), auth-aware API client.
+
+## AI Insights (done)
+- Provider-agnostic LLM (Ollama preferred) with deterministic data-grounded fallback.
+- Role-scoped controlled context; /insights page with examples and sources.
+
+## Tests (done)
+- 11 backend tests passing (auth, health, dashboard, ml, insights).
+- Frontend build green (`npm run build`).
 
 ## Next
-- Build ML pages in the frontend (forecast chart, segments, anomalies) against /api/ml.
-- Real auth/RBAC, remaining analytics pages.
-- AI insights (LLM, provider-agnostic) wiring.
-- Run the test suite (Phase 9.2).
+- Optional: real DB-backed users, refresh tokens.
+- Optional: reports/CSV export, admin system status page.
+- Optional: expand tests to ML pipeline and frontend components.

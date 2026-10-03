@@ -19,8 +19,9 @@ python -m pytest -q
 | test_auth.py | login, `/me`, role enforcement (viewer 403 / admin 200) |
 | test_dashboard.py | real KPIs + monthly series (skips if ETL not run) |
 | test_ml.py | `/api/ml/status` lists all features with valid statuses |
+| test_insights.py | `/api/insights/query` returns an answer; empty question 422 |
 
-Result (last run): **9 passed**.
+Result (last run): **11 passed**.
 
 ## Notes
 - Dashboard/ML tests are data-dependent and skip on a fresh clone until
