@@ -46,9 +46,9 @@
 - [x] 5.1 ML folder structure complete
 - [x] 5.2 EDA/preprocessing (notebooks + src)
 - [x] 5.3 Baselines (stubs created)
-- [x] 5.4 Forecasting, Sales prediction, Segmentation, Anomaly (feasibility done), Sales prediction, Segmentation, Anomaly (feasibility)
+- [x] 5.4 Forecasting, Sales prediction, Segmentation, Anomaly (feasibility done)
 - [x] 5.5 Training/eval (light baseline run; no heavy training; metrics documented in ML_BASELINES.md)
-- [x] 5.6 ML backend interfaces + status + status
+- [x] 5.6 ML backend interfaces + status
 
 ## Phase 6 — AI Business Insights
 - [x] 6.1 Controlled data retrieval (design doc) (tools/functions)
@@ -75,6 +75,7 @@
 ## Phase 10 — GitHub Completion
 - [ ] 10.1 Final checks (secrets/dataset)
 - [ ] 10.2 Commits, push, report
+
 
 
 
