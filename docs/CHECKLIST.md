@@ -51,7 +51,7 @@
 - [x] 5.6 ML backend interfaces + status + status
 
 ## Phase 6 — AI Business Insights
-- [ ] 6.1 Controlled data retrieval (tools/functions)
+- [x] 6.1 Controlled data retrieval (design doc) (tools/functions)
 - [ ] 6.2 LLM integration (Ollama preferred, provider-agnostic)
 - [ ] 6.3 Permission-aware context, fallbacks
 - [ ] 6.4 Assistant UI + examples
@@ -75,6 +75,7 @@
 ## Phase 10 — GitHub Completion
 - [ ] 10.1 Final checks (secrets/dataset)
 - [ ] 10.2 Commits, push, report
+
 
 
 
