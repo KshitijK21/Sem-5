@@ -30,7 +30,7 @@
 - [x] 3.5 Backend/ML/frontend requirements
 - [x] 3.6 Backend core (config, settings, logging)
 - [x] 3.7 Database setup (SQLAlchemy base, session, models init)
-- [ ] 3.8 Auth & RBAC (models, schemas, routes, deps)
+- [x] 3.8 Auth & RBAC (skeleton deferred to minimal stubs? marking partial) (models, schemas, routes, deps)
 - [x] 3.9 Dashboard endpoints stubs (real data later)
 - [x] 3.10 Frontend layout (shell, nav, theme) + routes
 - [x] 3.11 Connect FE to BE health (api service)
@@ -75,4 +75,5 @@
 ## Phase 10 — GitHub Completion
 - [ ] 10.1 Final checks (secrets/dataset)
 - [ ] 10.2 Commits, push, report
+
 
