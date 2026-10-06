@@ -23,9 +23,21 @@ BI_GET = [
     "/api/ml/status",
     "/api/ml/anomalies",
     "/api/ml/segments/customers",
+    "/api/ml/forecast?periods=7",
+    "/api/ml/models/sales_prediction",
     "/api/insights/status",
     "/api/reports/export?report=kpis",
+    "/api/reports/export?report=monthly_revenue",
 ]
+
+PREDICT_PAYLOAD = {
+    "purchase_month": 11,
+    "purchase_weekday": 4,
+    "purchase_hour": 15,
+    "n_items": 2,
+    "customer_state": "SP",
+    "product_category_name": "bed_bath_table",
+}
 
 ADMIN_GET = [
     "/api/admin/system/status",
@@ -39,9 +51,17 @@ ADMIN_GET = [
 
 
 def test_bi_endpoints_allowed_for_both_roles(client, auth, analyst_auth):
+    # Authorization only: never 401/403. 503 is the honest "artifact missing"
+    # response on a machine that has not trained the models yet.
     for path in BI_GET:
-        assert client.get(path, headers=analyst_auth).status_code in {200, 404}, path
-        assert client.get(path, headers=auth).status_code in {200, 404}, path
+        for headers in (analyst_auth, auth):
+            assert client.get(path, headers=headers).status_code in {200, 404, 503}, path
+
+
+def test_ml_predict_allowed_for_both_roles_and_denied_for_anonymous(client, auth, analyst_auth):
+    assert client.post("/api/ml/predict/sales", json=PREDICT_PAYLOAD, headers=analyst_auth).status_code in {200, 503}
+    assert client.post("/api/ml/predict/sales", json=PREDICT_PAYLOAD, headers=auth).status_code in {200, 503}
+    assert client.post("/api/ml/predict/sales", json=PREDICT_PAYLOAD).status_code == 401
 
 
 def test_bi_endpoints_reject_anonymous(client):
@@ -71,6 +91,17 @@ def test_ai_insights_allowed_for_both_and_denied_for_anonymous(client, auth, ana
     assert client.post("/api/insights/query", json=payload, headers=analyst_auth).status_code == 200
     assert client.post("/api/insights/query", json=payload, headers=auth).status_code == 200
     assert client.post("/api/insights/query", json=payload).status_code == 401
+
+
+def test_authorization_ignores_the_jwt_role_claim(client):
+    """Backend authority: the role is read from the database per request, so a
+    forged/stale `role` claim inside a valid token grants nothing."""
+    from app.core.security import create_access_token
+
+    forged = {"Authorization": f"Bearer {create_access_token('analyst', 'admin')}"}
+    assert client.get("/api/dashboard/kpis", headers=forged).status_code == 200
+    assert client.get("/api/users", headers=forged).status_code == 403
+    assert client.get("/api/admin/settings", headers=forged).status_code == 403
 
 
 def test_role_endpoint_validates_input(client, auth, analyst_auth):

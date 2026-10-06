@@ -95,9 +95,13 @@ change takes effect immediately.
   `isAuthRequired()` defaults to **true** (explicit `VITE_AUTH_REQUIRED=false`
   opts out). Unknown/retired roles in localStorage are ignored.
 - `components/RequireAuth.tsx` — redirects anonymous users to `/login`.
-- `components/RequireAdmin.tsx` — administration guard; it asks
-  `GET /api/users/me` for the authoritative role, reconciles the cached copy,
-  and renders `AccessDenied` instead of admin content while/after loading.
+- `components/RequireAdmin.tsx` — administration guard wired into the route
+  config (`routes.tsx`); it asks `GET /api/users/me` for the authoritative role,
+  reconciles the cached copy, and renders `AccessDenied` instead of admin
+  content while/after loading. It never grants access from local state:
+  `401` sends the user through the login flow, and any other failure (backend
+  unreachable, 5xx) shows a retryable "could not verify access" state instead
+  of trusting localStorage.
 - `components/AccessDenied.tsx` — “Access Restricted” + Back to Dashboard.
 - `components/common/Nav.tsx` — Business Intelligence links for everyone, a
   separate Administration group only for admins.

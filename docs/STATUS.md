@@ -45,10 +45,10 @@
 - Route-level code-splitting + vendor/charts/motion chunks (no >500 kB chunk).
 
 ## Tests (done)
-- Backend: 48 passing (health, auth, refresh, users, RBAC matrix, reports,
-  admin, dashboard, dialect, ml, insights).
+- Backend: 50 passing (health, auth, refresh, users, RBAC matrix incl. forged
+  JWT role claim, reports, admin, dashboard, dialect, ml, insights).
 - ML: 8 passing (feature builders, metrics, metadata).
-- Frontend: 13 passing (auth service, RequireAuth, RequireAdmin); lint clean;
+- Frontend: 15 passing (auth service, RequireAuth, RequireAdmin); lint clean;
   build green.
 - E2E: 5 passing (Playwright: landing, login form, real admin sign-in →
   dashboard, admin user management, analyst BI-only access). E2E surfaced and

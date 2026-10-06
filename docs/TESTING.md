@@ -11,7 +11,7 @@
 
 ## Running
 ```powershell
-# Backend (48 tests)
+# Backend (50 tests)
 cd backend
 pip install -r requirements-dev.txt
 python -m pytest -q
@@ -21,7 +21,7 @@ cd ml
 pip install -r requirements-dev.txt
 python -m pytest -q
 
-# Frontend unit/component (13 tests), lint, build
+# Frontend unit/component (15 tests), lint, build
 cd frontend
 npm install
 npm test
@@ -68,7 +68,7 @@ npm run e2e
 Playwright starts both servers automatically (`frontend/playwright.config.ts`):
 backend `uvicorn` on :8000 and Vite dev on :5173.
 
-Result (last run): **backend 48 passed**, **ml 8 passed**, **frontend 13 passed**,
+Result (last run): **backend 50 passed**, **ml 8 passed**, **frontend 15 passed**,
 **E2E 5 passed**, `npm run lint` clean, `npm run build` green.
 
 ## Notes

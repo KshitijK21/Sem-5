@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import RequireAdmin from '@/components/RequireAdmin'
@@ -82,5 +82,30 @@ describe('RequireAdmin', () => {
     renderAdmin()
     expect(screen.getByText('login page')).toBeInTheDocument()
     expect(mockedGetMe).not.toHaveBeenCalled()
+  })
+
+  it('redirects to login when the backend rejects the session (401)', async () => {
+    vi.stubEnv('VITE_AUTH_REQUIRED', 'true')
+    store('admin')
+    mockedGetMe.mockRejectedValue(new Error('Request failed: 401'))
+
+    renderAdmin()
+    expect(await screen.findByText('login page')).toBeInTheDocument()
+    expect(screen.queryByText('admin content')).not.toBeInTheDocument()
+  })
+
+  it('fails safe when the backend cannot be reached: never trusts localStorage', async () => {
+    vi.stubEnv('VITE_AUTH_REQUIRED', 'true')
+    store('admin')
+    mockedGetMe.mockRejectedValue(new Error('Failed to fetch'))
+
+    renderAdmin()
+    expect(await screen.findByText('Could not verify access')).toBeInTheDocument()
+    expect(screen.queryByText('admin content')).not.toBeInTheDocument()
+
+    // a retry that succeeds still renders admin content for a real admin
+    mockedGetMe.mockResolvedValue({ user: { id: 1, username: 'admin', role: 'admin' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Try again' }))
+    expect(await screen.findByText('admin content')).toBeInTheDocument()
   })
 })

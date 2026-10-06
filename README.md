@@ -1,10 +1,10 @@
-# AI-Powered Business Intelligence and Predictive Analytics Platform (sem-5)
+﻿# AI-Powered Business Intelligence and Predictive Analytics Platform (sem-5)
 
 Semester 5 academic project: AI, Data Warehousing & Mining, and Software
 Engineering integrated into one working platform. Uses the Olist Brazilian
 E-Commerce dataset.
 
-## Quick Status — complete
+## Quick Status â€” complete
 - Local repo: `%USERPROFILE%\Downloads\sem-5`
 - Dataset: `%USERPROFILE%\Downloads\olist` (9 CSVs, never committed)
 - Tools: git, node, python, pip, docker. `gh` CLI intentionally not used.
@@ -32,18 +32,18 @@ E-Commerce dataset.
 
 ## Testing
 ```powershell
-cd backend; python -m pytest -q          # 48 API tests (incl. RBAC matrix)
+cd backend; python -m pytest -q          # 50 API tests (incl. RBAC matrix)
 cd ml;      python -m pytest -q          # 8 pipeline tests
-cd frontend; npm test                    # 13 component tests (Vitest)
+cd frontend; npm test                    # 15 component tests (Vitest)
 cd frontend; npm run e2e                 # 5 browser E2E (Playwright)
 cd frontend; npm run lint; npm run build
 ```
 
-## Roles (two only — see `docs/RBAC.md`)
+## Roles (two only â€” see `docs/RBAC.md`)
 | Role | Can do | Cannot do |
 |---|---|---|
 | `analyst` | Dashboard, analytics, ML models + metrics, AI insights, reports & CSV exports | Users, roles, system health, ETL, warehouse/ML admin, settings |
-| `admin` | Everything above **plus** platform administration | — |
+| `admin` | Everything above **plus** platform administration | â€” |
 
 Seeded dev accounts: `admin` / `admin123`, `analyst` / `analyst123`.
 There is no viewer role; legacy `viewer` accounts become `analyst`. Authorization
