@@ -1,4 +1,4 @@
-import { getRefreshToken, getToken, refreshAccessToken } from './auth'
+import { getRefreshToken, getToken, refreshAccessToken, type Role } from './auth'
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 
@@ -243,7 +243,7 @@ export function getEtlStatus() {
 export interface PublicUser {
   id: number
   username: string
-  role: string
+  role: Role
 }
 
 export function getMe() {
@@ -252,4 +252,71 @@ export function getMe() {
 
 export function listUsers() {
   return getJson<{ users: PublicUser[] }>('/api/users')
+}
+
+export function createUser(username: string, password: string, role: Role) {
+  return postJson<{ user: PublicUser }>('/api/auth/register', { username, password, role })
+}
+
+export function updateUserRole(username: string, role: Role) {
+  return request<{ user: PublicUser }>(`/api/users/${encodeURIComponent(username)}/role`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ role }),
+  })
+}
+
+// ---- Administration ----
+
+export interface WarehouseStatus {
+  dialect: string
+  schema_tables: string[]
+  warehouse_tables: Record<string, number | null>
+  expected_tables: number
+  loaded_tables: number
+  total_rows: number
+  complete: boolean
+  source: string
+}
+
+export function getWarehouseStatus() {
+  return getJson<WarehouseStatus>('/api/admin/warehouse/status')
+}
+
+export interface ArtifactInfo {
+  file: string
+  size_bytes: number
+  modified_at: string
+}
+
+export interface MlAdminStatus {
+  models_dir: string
+  artifacts: ArtifactInfo[]
+  artifact_count: number
+  metadata_entries: number
+  features: MlFeature[]
+  data_dir_exists: boolean
+  retraining: string
+}
+
+export function getMlAdminStatus() {
+  return getJson<MlAdminStatus>('/api/admin/ml/status')
+}
+
+export interface SystemSettings {
+  app: string
+  version: string
+  env: string
+  auth_required: boolean
+  access_token_expire_minutes: number
+  refresh_token_expire_minutes: number
+  roles: Role[]
+  llm: { enabled: boolean; provider: string; timeout_seconds: number }
+  dataset: string
+  reports: string[]
+  secrets_exposed: boolean
+}
+
+export function getSystemSettings() {
+  return getJson<SystemSettings>('/api/admin/settings')
 }

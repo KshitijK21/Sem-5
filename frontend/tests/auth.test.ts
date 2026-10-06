@@ -1,5 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { getStoredUser, getToken, login, logout } from '@/services/auth'
+import {
+  getStoredUser,
+  getToken,
+  isAdmin,
+  isAnalyst,
+  isAdminOrAnalyst,
+  login,
+  logout,
+} from '@/services/auth'
 
 describe('auth service', () => {
   beforeEach(() => {
@@ -50,5 +58,45 @@ describe('auth service', () => {
     expect(getToken()).toBeNull()
     expect(getStoredUser()).toBeNull()
     expect(localStorage.getItem('sem5_refresh')).toBeNull()
+  })
+})
+
+describe('role helpers', () => {
+  beforeEach(() => {
+    localStorage.clear()
+  })
+
+  function store(role: string) {
+    localStorage.setItem(
+      'sem5_user',
+      JSON.stringify({ id: 1, username: role, role }),
+    )
+  }
+
+  it('identifies the admin role', () => {
+    store('admin')
+    expect(isAdmin()).toBe(true)
+    expect(isAnalyst()).toBe(false)
+    expect(isAdminOrAnalyst()).toBe(true)
+  })
+
+  it('identifies the analyst role', () => {
+    store('analyst')
+    expect(isAdmin()).toBe(false)
+    expect(isAnalyst()).toBe(true)
+    expect(isAdminOrAnalyst()).toBe(true)
+  })
+
+  it('ignores unknown/retired roles such as viewer', () => {
+    store('viewer')
+    expect(getStoredUser()).toBeNull()
+    expect(isAdmin()).toBe(false)
+    expect(isAnalyst()).toBe(false)
+    expect(isAdminOrAnalyst()).toBe(false)
+  })
+
+  it('defaults to auth being required', () => {
+    vi.unstubAllEnvs()
+    expect(import.meta.env.VITE_AUTH_REQUIRED).not.toBe('false')
   })
 })

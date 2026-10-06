@@ -65,7 +65,9 @@ export default function Login() {
         </button>
 
         <p className="text-xs text-neutral-500">
-          Demo roles: admin / analyst / viewer (passwords set via AUTH_* env vars).
+          Two roles: <span className="text-neutral-300">admin</span> (business intelligence +
+          platform administration) and{' '}
+          <span className="text-neutral-300">analyst</span> (business intelligence).
         </p>
       </form>
     </div>

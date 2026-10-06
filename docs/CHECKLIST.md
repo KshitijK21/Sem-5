@@ -80,7 +80,7 @@
 - [x] 10.2 Commits, push, report (pushed incrementally)
 
 ## Phase 11 — Extended (no "optional" left)
-- [x] 11.1 DB-backed users (app_user table) with seeded admin/analyst/viewer
+- [x] 11.1 DB-backed users (app_user table) with seeded admin/analyst
 - [x] 11.2 Refresh tokens (access + refresh, `type` claim) + `/api/auth/refresh`
 - [x] 11.3 User management API (`/api/users`: me, password, list, role)
 - [x] 11.4 CSV reports API (`/api/reports/export`) — permission-aware
@@ -96,6 +96,16 @@
 - [x] 11.14 Route code-splitting + vendor/charts/motion chunks (no >500 kB chunk)
 - [x] 11.15 Playwright E2E (3) — fixed a nested-<Router> runtime bug
 - [x] 11.16 PROJECT_PLAN.md synced to completion
+
+## Phase 12 — Two-role RBAC (admin + analyst, no viewer)
+- [x] 12.1 Backend role model: `VALID_ROLES`/`ROLE_RANK`, `validate_role()`, seed admin+analyst, legacy `viewer`→`analyst` migration (never auto-promoted)
+- [x] 12.2 Last-admin protection: `LastAdminError` → 409 on role change/demote
+- [x] 12.3 Router-level enforcement in `app/main.py`: business routers → `require_bi_user`, `/api/admin` → `require_admin`; `AUTH_REQUIRED` default true
+- [x] 12.4 New admin endpoints: warehouse status, ML status, settings (no secrets)
+- [x] 12.5 Reports + insights: both roles, backend-authorized (`get_current_user`)
+- [x] 12.6 Frontend: role helpers, `RequireAdmin` + `AccessDenied`, AdminLayout, BI/Admin nav split, 6 admin pages, viewer references removed
+- [x] 12.7 Tests: backend matrix suite (`test_rbac.py`), rewritten role tests, `RequireAdmin` frontend tests, analyst/admin Playwright flows
+- [x] 12.8 Docs: RBAC.md rewritten; README, STATUS, TESTING, API, SRS, DECISIONS, CHECKLIST, .env.example updated
 
 
 

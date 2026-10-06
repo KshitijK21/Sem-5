@@ -7,7 +7,12 @@ AI-Powered BI & Predictive Analytics Platform using Olist dataset.
 Dashboards, analytics, warehouse/ETL, ML (planned), AI assistant (controlled), RBAC.
 
 ## User Classes
-Admin, Analyst, Viewer.
+Admin, Analyst. (Two roles only; see docs/RBAC.md.)
+
+- Analyst: business intelligence (dashboards, analytics, ML, AI insights,
+  reports/exports).
+- Admin: business intelligence + platform administration (users, roles, system
+  health, ETL, warehouse, ML administration, settings).
 
 ## Functional (key)
 - Auth/RBAC enforced backend

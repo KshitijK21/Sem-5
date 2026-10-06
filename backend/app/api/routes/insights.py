@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.ai_assistant import context as ctx
 from app.ai_assistant.provider import ProviderFactory, provider_status
-from app.api.deps import get_optional_user
+from app.api.deps import get_current_user
 from app.database.deps import get_db
 
 router = APIRouter()
@@ -24,17 +24,15 @@ def insights_status():
 def insights_query(
     payload: QueryRequest,
     db: Session = Depends(get_db),
-    user: dict | None = Depends(get_optional_user),
+    user: dict = Depends(get_current_user),
 ):
-    role = (user or {}).get("role", "viewer")
+    # Business BI feature: both roles get the full warehouse context.
+    # Administrative data is never exposed to the assistant.
+    role = user.get("role", "analyst")
 
     try:
         context = ctx.build_context(db, role)
-        sources = ["warehouse.kpis"] + (
-            ["warehouse.monthly_revenue", "warehouse.categories", "ml.status"]
-            if role in {"analyst", "admin"}
-            else []
-        )
+        sources = ["warehouse.kpis", "warehouse.monthly_revenue", "warehouse.categories", "ml.status"]
     except Exception:
         context = {"note": "warehouse not loaded; run ETL for full context"}
         sources = []

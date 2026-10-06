@@ -13,7 +13,7 @@ class PasswordChange(BaseModel):
 
 
 class RoleChange(BaseModel):
-    role: str = Field(..., pattern="^(viewer|analyst|admin)$")
+    role: str = Field(..., pattern="^(analyst|admin)$")
 
 
 @router.get("/me")
@@ -41,7 +41,10 @@ def list_all(_: dict = Depends(require_roles("admin"))):
 
 @router.patch("/{username}/role")
 def set_role(username: str, payload: RoleChange, _: dict = Depends(require_roles("admin"))):
-    updated = user_service.update_role(username, payload.role)
+    try:
+        updated = user_service.update_role(username, payload.role)
+    except user_service.LastAdminError as exc:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     if not updated:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     return {"user": updated}

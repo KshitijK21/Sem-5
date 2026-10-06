@@ -13,11 +13,17 @@
 - Frontend /models page: status cards, forecast chart, segment chart, anomaly table, predict form.
 
 ## Auth / RBAC (done)
+- Two roles only: **admin** + **analyst** (no viewer). Matrix: docs/RBAC.md.
 - JWT login with access + refresh tokens, bcrypt-hashed users persisted in the
-  `app_user` table (admin/analyst/viewer), role deps, auth_gate.
+  `app_user` table, router-level role deps (`require_bi_user` for business
+  routers, `require_admin` for `/api/admin`), `AUTH_REQUIRED` default true.
+- Single role source of truth (`VALID_ROLES`/`ROLE_RANK` in
+  `app/services/users.py`); legacy `viewer` rows migrate to `analyst`.
+- Last-admin protection (409) on role changes; invalid roles rejected.
 - User management API (profile/password/role), admin user list.
-- Frontend login page, protected routes (VITE_AUTH_REQUIRED), auth-aware API
-  client with automatic token refresh on 401.
+- Frontend login page, protected routes, `RequireAdmin` + `AccessDenied`,
+  auth-aware API client with automatic token refresh on 401; BI vs
+  Administration navigation split.
 
 ## AI Insights (done)
 - Provider-agnostic LLM (Ollama preferred) with deterministic data-grounded fallback.
@@ -26,7 +32,9 @@
 ## Reporting & Admin (done)
 - CSV export API (`/api/reports/export`) for KPIs, monthly revenue, revenue by
   category, orders by status; permission-aware.
-- Admin API (system status, ETL status) + `/reports` and `/admin` frontend pages.
+- Admin API (system status, ETL status, warehouse status, ML status, settings)
+  + administration frontend section (`/admin/users`, `/admin/health`,
+  `/admin/data`, `/admin/warehouse`, `/admin/ml`, `/admin/settings`).
 - Dashboard date-range and order-status filters.
 
 ## Quality / tooling (done)
@@ -37,12 +45,14 @@
 - Route-level code-splitting + vendor/charts/motion chunks (no >500 kB chunk).
 
 ## Tests (done)
-- Backend: 26 passing (auth, refresh, users, reports, admin, health, dashboard,
-  dialect, ml, insights).
+- Backend: 48 passing (health, auth, refresh, users, RBAC matrix, reports,
+  admin, dashboard, dialect, ml, insights).
 - ML: 8 passing (feature builders, metrics, metadata).
-- Frontend: 5 passing (auth service, RequireAuth); lint clean; build green.
-- E2E: 3 passing (Playwright: landing, login form, real admin sign-in →
-  dashboard). E2E surfaced and fixed a nested-`<Router>` runtime bug.
+- Frontend: 13 passing (auth service, RequireAuth, RequireAdmin); lint clean;
+  build green.
+- E2E: 5 passing (Playwright: landing, login form, real admin sign-in →
+  dashboard, admin user management, analyst BI-only access). E2E surfaced and
+  fixed a nested-`<Router>` runtime bug.
 
 ## Next
 - None required. Optional future work: CI workflow, Docker Compose for

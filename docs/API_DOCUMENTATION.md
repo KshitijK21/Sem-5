@@ -3,8 +3,10 @@
 ## Base
 - Base URL: `http://localhost:8000`
 - Auth: JWT Bearer. Obtained via `POST /api/auth/login` (OAuth2 form).
-- Backend enforces RBAC. Set `AUTH_REQUIRED=true` to require a token on all
-  protected routers.
+- Backend enforces RBAC for every request. `AUTH_REQUIRED` defaults to
+  **true**: business routers require an authenticated analyst/admin token and
+  `/api/admin` requires admin. Set `AUTH_REQUIRED=false` only for local
+  development without login.
 
 ## Auth — `/api/auth`
 | Method | Path | Access | Notes |
@@ -12,7 +14,7 @@
 | POST | `/login` | public | form: username, password -> `{access_token, refresh_token, token_type, user}` |
 | POST | `/refresh` | public (refresh token) | body `{refresh_token}` -> new access token |
 | GET | `/me` | any authenticated | current user |
-| POST | `/register` | admin | create a user `{username, password, role}` -> 201 |
+| POST | `/register` | admin | create a user `{username, password, role}` (role: `analyst`\|`admin`) -> 201 |
 | GET | `/admin/users` | admin | list users (no hashes) |
 
 ## Users — `/api/users`
@@ -21,21 +23,24 @@
 | GET | `/me` | any authenticated | current profile |
 | PATCH | `/me` | any authenticated | change own password (`current_password`, `new_password`) |
 | GET | `""` | admin | list all users |
-| PATCH | `/{username}/role` | admin | change a user's role |
+| PATCH | `/{username}/role` | admin | change a user's role (`analyst`\|`admin`); `409` if it would leave zero admins |
 
 ## Reports (CSV export) — `/api/reports`
 | Method | Path | Access | Notes |
 |---|---|---|---|
-| GET | `/export?report=<name>` | analyst+ (kpis: viewer+) | streams `text/csv` |
+| GET | `/export?report=<name>` | analyst/admin | streams `text/csv` |
 
 Supported `report` values: `kpis`, `monthly_revenue`, `revenue_by_category`,
 `orders_by_status`. Unknown reports return `404`.
 
-## Admin — `/api/admin`
+## Admin — `/api/admin` (admin only; analyst → `403`)
 | Method | Path | Access | Notes |
 |---|---|---|---|
 | GET | `/system/status` | admin | app/version/database/uptime summary |
 | GET | `/data/etl/status` | admin | warehouse row counts + `loaded` flag |
+| GET | `/warehouse/status` | admin | star-schema table counts + load state |
+| GET | `/ml/status` | admin | artifact/model inventory for administration |
+| GET | `/settings` | admin | non-secret configuration (secrets never returned) |
 
 ## Dashboard — `/api/dashboard`
 | Method | Path | Notes |
@@ -77,5 +82,8 @@ Supported `report` values: `kpis`, `monthly_revenue`, `revenue_by_category`,
 - ML endpoints return `503` if the artifact is unavailable, with honest status.
 
 ## Security
-- RBAC enforced backend; CORS restricted to the frontend origin; input validation.
-- Passwords stored as bcrypt hashes only; no secrets exposed in responses/logs.
+- RBAC enforced backend (two roles: analyst for business routes, admin for
+  administration routes); CORS restricted to the frontend origin; input
+  validation.
+- Passwords stored as bcrypt hashes only; no secrets exposed in
+  responses/logs (settings endpoint returns configuration, never credentials).

@@ -13,11 +13,11 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("REFRESH_TOKEN_EXPIRE_MINUTES", "10080"))
     ENV: str = os.getenv("ENV", "dev")
 
-    # Auth / RBAC
-    AUTH_REQUIRED: bool = os.getenv("AUTH_REQUIRED", "false").lower() in {"1", "true", "yes"}
+    # Auth / RBAC. Two roles only: admin and analyst.
+    # Defaults to true: every protected router rejects anonymous callers with 401.
+    AUTH_REQUIRED: bool = os.getenv("AUTH_REQUIRED", "true").lower() in {"1", "true", "yes"}
     AUTH_ADMIN_PASSWORD: str = os.getenv("AUTH_ADMIN_PASSWORD", "admin123")
     AUTH_ANALYST_PASSWORD: str = os.getenv("AUTH_ANALYST_PASSWORD", "analyst123")
-    AUTH_VIEWER_PASSWORD: str = os.getenv("AUTH_VIEWER_PASSWORD", "viewer123")
 
     # AI assistant (provider-agnostic; Ollama preferred)
     ENABLE_LLM_ASSISTANT: bool = os.getenv("ENABLE_LLM_ASSISTANT", "false").lower() in {"1", "true", "yes"}

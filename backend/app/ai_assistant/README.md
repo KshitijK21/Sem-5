@@ -4,9 +4,10 @@ Provider-agnostic LLM assistant grounded strictly in warehouse data.
 
 ## Flow
 1. `POST /api/insights/query` `{question, context_limit?}`
-2. `context.build_context(db, role)` gathers a fixed, role-scoped set of real
-   aggregates (no arbitrary SQL). Viewers get KPIs only; analysts/admins also get
-   monthly revenue, top categories, order statuses, and ML status.
+2. `context.build_context(db, role)` gathers a fixed set of real aggregates
+   (no arbitrary SQL): monthly revenue, top categories, order statuses, and ML
+   status. Both supported roles (analyst/admin) get this same business context;
+   platform administration data and secrets are never included.
 3. `provider.ProviderFactory.get_provider()` selects the LLM:
    - `OllamaProvider` when `ENABLE_LLM_ASSISTANT=true` and `LLM_PROVIDER=ollama`
      (calls `${OLLAMA_BASE_URL}/api/generate`).

@@ -6,20 +6,19 @@ from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
 from app.analytics import kpis as kpi_service
-from app.api.deps import get_optional_user
+from app.api.deps import get_current_user
 from app.database.deps import get_db
+from app.services import users as user_service
 
 router = APIRouter()
 
-# report name -> minimum role allowed to export it
+# Business reports are shared BI functionality: admin and analyst alike.
 REPORT_ACCESS = {
-    "kpis": "viewer",
+    "kpis": "analyst",
     "monthly_revenue": "analyst",
     "revenue_by_category": "analyst",
-    "orders_by_status": "viewer",
+    "orders_by_status": "analyst",
 }
-
-ROLE_RANK = {"viewer": 1, "analyst": 2, "admin": 3}
 
 
 def _to_csv(rows: list[dict]) -> str:
@@ -52,13 +51,12 @@ def export_report(
     date_to: str | None = None,
     order_status: str | None = None,
     db: Session = Depends(get_db),
-    user: dict | None = Depends(get_optional_user),
+    user: dict = Depends(get_current_user),
 ):
     if report not in REPORT_ACCESS:
         raise HTTPException(status_code=404, detail=f"unknown report '{report}'")
 
-    role = (user or {}).get("role", "viewer")
-    if ROLE_RANK.get(role, 0) < ROLE_RANK[REPORT_ACCESS[report]]:
+    if not user_service.role_at_least(user, REPORT_ACCESS[report]):
         raise HTTPException(
             status_code=403, detail=f"Requires {REPORT_ACCESS[report]} role to export '{report}'"
         )

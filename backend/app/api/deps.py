@@ -43,6 +43,31 @@ def require_roles(*roles: str):
     return checker
 
 
+def require_bi_user(user: dict = Depends(get_current_user)) -> dict:
+    """Business intelligence access: admin and analyst only.
+
+    Applied to dashboard / analytics / ML / AI insights / reports routers so that
+    anonymous callers get 401 and any non-BI role gets 403, regardless of the
+    AUTH_REQUIRED flag.
+    """
+    if not user_service.role_at_least(user, "analyst"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Requires analyst or admin role",
+        )
+    return user
+
+
+def require_admin(user: dict = Depends(get_current_user)) -> dict:
+    """Platform administration access: admin only."""
+    if user.get("role") != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Requires admin role",
+        )
+    return user
+
+
 def require_min_role(min_role: str):
     def checker(user: dict = Depends(get_current_user)) -> dict:
         if not user_service.role_at_least(user, min_role):

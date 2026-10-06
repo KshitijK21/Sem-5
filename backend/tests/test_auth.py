@@ -14,6 +14,11 @@ def test_login_and_me(client):
     assert me.json()["user"]["username"] == "admin"
 
 
+def test_analyst_login_reports_analyst_role(client):
+    body = _login(client, "analyst", "analyst123").json()
+    assert body["user"]["role"] == "analyst"
+
+
 def test_bad_login_rejected(client):
     assert _login(client, "admin", "wrong-password").status_code == 401
 
@@ -23,11 +28,14 @@ def test_me_requires_token(client):
 
 
 def test_admin_endpoint_enforces_role(client):
-    viewer = _login(client, "viewer", "viewer123").json()["access_token"]
-    forbidden = client.get("/api/auth/admin/users", headers={"Authorization": f"Bearer {viewer}"})
+    analyst = _login(client, "analyst", "analyst123").json()["access_token"]
+    forbidden = client.get(
+        "/api/auth/admin/users", headers={"Authorization": f"Bearer {analyst}"}
+    )
     assert forbidden.status_code == 403
 
     admin = _login(client, "admin", "admin123").json()["access_token"]
     ok = client.get("/api/auth/admin/users", headers={"Authorization": f"Bearer {admin}"})
     assert ok.status_code == 200
     assert all("hashed_password" not in u for u in ok.json()["users"])
+    assert {u["role"] for u in ok.json()["users"]} <= {"admin", "analyst"}

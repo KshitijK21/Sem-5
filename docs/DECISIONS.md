@@ -23,7 +23,7 @@
 
 ## Security/RBAC
 - Enforce authZ on backend. Hash passwords. No secrets in repo. LLM gets controlled tools only.
-- Roles: Admin, Analyst, Viewer (document matrix in docs/RBAC.md).
+- Roles: Admin, Analyst (two roles only; matrix in docs/RBAC.md).
 
 ## Parallel dev
 - ML starts in P2 alongside contracts; interfaces fixed early. Website usable without ML/LLM.

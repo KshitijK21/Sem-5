@@ -13,20 +13,23 @@ from app.analytics import kpis as kpi_service
 from app.services import ml as ml_service
 
 
-def build_context(db: Session, role: str = "viewer") -> dict:
-    context: dict = {
+def build_context(db: Session, role: str = "analyst") -> dict:
+    """Build the assistant context for an authenticated BI user.
+
+    Both supported roles (analyst, admin) receive the same business-intelligence
+    context. Platform administration data is never included.
+    """
+    return {
         "dataset": "Olist Brazilian e-commerce (Sep 2016 - Oct 2018)",
+        "role": role,
         "kpis": kpi_service.get_kpis(db)["kpis"],
-    }
-    if role in {"analyst", "admin"}:
-        monthly = kpi_service.monthly_revenue(db)
-        context["monthly_revenue_last12"] = monthly[-12:]
-        context["revenue_by_category_top10"] = kpi_service.revenue_by_category(db)[:10]
-        context["orders_by_status"] = kpi_service.orders_by_status(db)
-        context["ml_features"] = [
+        "monthly_revenue_last12": kpi_service.monthly_revenue(db)[-12:],
+        "revenue_by_category_top10": kpi_service.revenue_by_category(db)[:10],
+        "orders_by_status": kpi_service.orders_by_status(db),
+        "ml_features": [
             {"name": f["name"], "status": f["status"]} for f in ml_service.feature_status()
-        ]
-    return context
+        ],
+    }
 
 
 def summarize(context: dict) -> str:

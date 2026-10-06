@@ -20,7 +20,7 @@ class RefreshRequest(BaseModel):
 class RegisterRequest(BaseModel):
     username: str = Field(..., min_length=3, max_length=50)
     password: str = Field(..., min_length=6, max_length=128)
-    role: str = Field("viewer", pattern="^(viewer|analyst|admin)$")
+    role: str = Field("analyst", pattern="^(analyst|admin)$")
 
 
 def _public(user: dict) -> dict:

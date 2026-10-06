@@ -4,10 +4,12 @@ const TOKEN_KEY = 'sem5_token'
 const REFRESH_KEY = 'sem5_refresh'
 const USER_KEY = 'sem5_user'
 
+export type Role = 'admin' | 'analyst'
+
 export interface AuthUser {
   id: number
   username: string
-  role: string
+  role: Role
 }
 
 export function getToken(): string | null {
@@ -22,18 +24,36 @@ export function getStoredUser(): AuthUser | null {
   const raw = localStorage.getItem(USER_KEY)
   if (!raw) return null
   try {
-    return JSON.parse(raw) as AuthUser
+    const user = JSON.parse(raw) as AuthUser
+    return user.role === 'admin' || user.role === 'analyst' ? user : null
   } catch {
     return null
   }
 }
 
-export function isAuthRequired(): boolean {
-  return import.meta.env.VITE_AUTH_REQUIRED === 'true'
+/** Replace the locally cached user with an authoritative backend response. */
+export function setStoredUser(user: AuthUser) {
+  localStorage.setItem(USER_KEY, JSON.stringify(user))
 }
 
+export function isAuthRequired(): boolean {
+  // Auth is on by default; only an explicit opt-out disables the route guards.
+  return import.meta.env.VITE_AUTH_REQUIRED !== 'false'
+}
+
+/** Platform administration: admin only. */
 export function isAdmin(): boolean {
   return getStoredUser()?.role === 'admin'
+}
+
+/** Business intelligence: both supported roles. */
+export function isAnalyst(): boolean {
+  return getStoredUser()?.role === 'analyst'
+}
+
+export function isAdminOrAnalyst(): boolean {
+  const role = getStoredUser()?.role
+  return role === 'admin' || role === 'analyst'
 }
 
 export async function login(username: string, password: string): Promise<AuthUser> {

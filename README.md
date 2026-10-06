@@ -32,12 +32,22 @@ E-Commerce dataset.
 
 ## Testing
 ```powershell
-cd backend; python -m pytest -q          # 26 API tests
+cd backend; python -m pytest -q          # 48 API tests (incl. RBAC matrix)
 cd ml;      python -m pytest -q          # 8 pipeline tests
-cd frontend; npm test                    # 5 component tests (Vitest)
-cd frontend; npm run e2e                 # 3 browser E2E (Playwright)
+cd frontend; npm test                    # 13 component tests (Vitest)
+cd frontend; npm run e2e                 # 5 browser E2E (Playwright)
 cd frontend; npm run lint; npm run build
 ```
+
+## Roles (two only — see `docs/RBAC.md`)
+| Role | Can do | Cannot do |
+|---|---|---|
+| `analyst` | Dashboard, analytics, ML models + metrics, AI insights, reports & CSV exports | Users, roles, system health, ETL, warehouse/ML admin, settings |
+| `admin` | Everything above **plus** platform administration | — |
+
+Seeded dev accounts: `admin` / `admin123`, `analyst` / `analyst123`.
+There is no viewer role; legacy `viewer` accounts become `analyst`. Authorization
+is enforced by the backend (frontend guards are UX only).
 
 ## Docs
 See `docs/` (SRS, ARCHITECTURE, DATABASE_DESIGN, KPIs, ML_DOCUMENTATION,
@@ -47,4 +57,5 @@ STATUS, CHECKLIST).
 ## Notes
 - ML and website were developed in parallel and integrated via documented interfaces.
 - AI assistant uses authorized backend data only (no arbitrary SQL).
+- `AUTH_REQUIRED` and `VITE_AUTH_REQUIRED` default to `true` (login required).
 - No secrets or raw dataset committed.

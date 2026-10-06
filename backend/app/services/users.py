@@ -6,30 +6,61 @@ from the AUTH_*_PASSWORD settings. Passwords are stored only as bcrypt hashes.
 
 from __future__ import annotations
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 
 from app.core.config import settings
 from app.core.security import hash_password, verify_password
 from app.database.session import Base, SessionLocal, engine
 from app.models.user import User
 
-# role hierarchy: higher number = more privileges
-ROLE_RANK = {"viewer": 1, "analyst": 2, "admin": 3}
+
+class LastAdminError(Exception):
+    """Raised when an operation would leave the platform with zero admins."""
+
+
+# Two-role model: every user is either an analyst (business intelligence) or an
+# admin (business intelligence + platform administration).
+ROLE_RANK = {"analyst": 1, "admin": 2}
+VALID_ROLES = frozenset(ROLE_RANK)
 
 _SEED = {
     "admin": ("admin", settings.AUTH_ADMIN_PASSWORD),
     "analyst": ("analyst", settings.AUTH_ANALYST_PASSWORD),
-    "viewer": ("viewer", settings.AUTH_VIEWER_PASSWORD),
 }
+
+LEGACY_ROLE_MIGRATION = {"viewer": "analyst", "user": "analyst"}
+
+
+def validate_role(role: str) -> str:
+    """Reject anything that is not `analyst` or `admin` (never trust the caller)."""
+    if role not in VALID_ROLES:
+        raise ValueError(f"invalid role: {role}. Valid roles: {sorted(VALID_ROLES)}")
+    return role
+
+
+def _migrate_legacy_roles(db) -> None:
+    """Move retired roles to analyst. Viewer users are never promoted to admin."""
+    for old, new in LEGACY_ROLE_MIGRATION.items():
+        db.query(User).filter(User.role == old).update({User.role: new}, synchronize_session=False)
 
 
 def _ensure_schema() -> None:
     Base.metadata.create_all(engine, tables=[User.__table__])
     with SessionLocal() as db:
+        _migrate_legacy_roles(db)
         if db.scalar(select(User.id).limit(1)) is None:
             for username, (role, password) in _SEED.items():
                 db.add(User(username=username, role=role, hashed_password=hash_password(password)))
-            db.commit()
+        db.commit()
+
+
+def count_users(role: str | None = None) -> int:
+    _ensure_schema()
+    with SessionLocal() as db:
+        stmt = select(func.count()).select_from(User)
+        if role:
+            stmt = stmt.where(User.role == role)
+        return int(db.scalar(stmt) or 0)
 
 
 def _to_dict(user: User) -> dict:
@@ -58,10 +89,9 @@ def authenticate(username: str, password: str) -> dict | None:
     return None
 
 
-def create_user(username: str, password: str, role: str = "viewer") -> dict:
+def create_user(username: str, password: str, role: str = "analyst") -> dict:
     _ensure_schema()
-    if role not in ROLE_RANK:
-        raise ValueError(f"invalid role: {role}")
+    validate_role(role)
     with SessionLocal() as db:
         if db.scalar(select(User).where(User.username == username)):
             raise ValueError("username already exists")
@@ -85,12 +115,22 @@ def update_password(username: str, new_password: str) -> bool:
 
 def update_role(username: str, role: str) -> dict | None:
     _ensure_schema()
-    if role not in ROLE_RANK:
-        raise ValueError(f"invalid role: {role}")
+    validate_role(role)
     with SessionLocal() as db:
         user = db.scalar(select(User).where(User.username == username))
         if not user:
             return None
+        if user.role == "admin" and role != "admin":
+            admins = int(
+                db.scalar(
+                    select(func.count()).select_from(User).where(User.role == "admin")
+                )
+                or 0
+            )
+            if admins <= 1:
+                raise LastAdminError(
+                    "cannot demote the last remaining admin; promote another admin first"
+                )
         user.role = role
         db.commit()
         return _to_dict(user)

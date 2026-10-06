@@ -1,6 +1,23 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { getStoredUser, isAdmin, logout } from '@/services/auth'
 
+const BI_LINKS = [
+  { to: '/dashboard', label: 'Dashboard' },
+  { to: '/analytics', label: 'Analytics' },
+  { to: '/models', label: 'ML Models' },
+  { to: '/insights', label: 'AI Insights' },
+  { to: '/reports', label: 'Reports' },
+]
+
+const ADMIN_LINKS = [
+  { to: '/admin/users', label: 'Users' },
+  { to: '/admin/health', label: 'System Health' },
+  { to: '/admin/data', label: 'Data / ETL' },
+  { to: '/admin/warehouse', label: 'Warehouse' },
+  { to: '/admin/ml', label: 'ML Admin' },
+  { to: '/admin/settings', label: 'Settings' },
+]
+
 export default function Nav() {
   const user = getStoredUser()
   const navigate = useNavigate()
@@ -11,14 +28,27 @@ export default function Nav() {
   }
 
   return (
-    <nav className="flex items-center gap-4 text-sm">
-      <Link to="/">Home</Link>
-      <Link to="/dashboard">Dashboard</Link>
-      <Link to="/analytics">Analytics</Link>
-      <Link to="/models">ML Models</Link>
-      <Link to="/reports">Reports</Link>
-      {isAdmin() && <Link to="/admin">Admin</Link>}
-      <Link to="/insights">AI Insights</Link>
+    <nav className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
+      <div className="flex items-center gap-4">
+        <span className="text-[11px] uppercase tracking-wide text-neutral-600">BI</span>
+        {BI_LINKS.map((l) => (
+          <Link key={l.to} to={l.to}>
+            {l.label}
+          </Link>
+        ))}
+      </div>
+
+      {isAdmin() && (
+        <div className="flex items-center gap-4 pl-4 border-l border-neutral-800">
+          <span className="text-[11px] uppercase tracking-wide text-neutral-600">Admin</span>
+          {ADMIN_LINKS.map((l) => (
+            <Link key={l.to} to={l.to}>
+              {l.label}
+            </Link>
+          ))}
+        </div>
+      )}
+
       {user ? (
         <span className="flex items-center gap-2 text-neutral-400">
           <span className="text-neutral-200">{user.username}</span>

@@ -52,10 +52,15 @@ def admin_token(client: TestClient) -> str:
 
 
 @pytest.fixture(scope="session")
-def viewer_token(client: TestClient) -> str:
-    return _token(client, "viewer", "viewer123")
+def analyst_token(client: TestClient) -> str:
+    return _token(client, "analyst", "analyst123")
 
 
 @pytest.fixture()
 def auth(admin_token: str) -> dict:
     return {"Authorization": f"Bearer {admin_token}"}
+
+
+@pytest.fixture()
+def analyst_auth(analyst_token: str) -> dict:
+    return {"Authorization": f"Bearer {analyst_token}"}

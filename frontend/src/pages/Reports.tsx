@@ -3,10 +3,10 @@ import { downloadReport } from '@/services/api'
 import { getStoredUser } from '@/services/auth'
 
 const REPORTS = [
-  { name: 'kpis', label: 'KPIs', minRole: 'Viewer' },
-  { name: 'orders_by_status', label: 'Orders by Status', minRole: 'Viewer' },
-  { name: 'monthly_revenue', label: 'Monthly Revenue', minRole: 'Analyst' },
-  { name: 'revenue_by_category', label: 'Revenue by Category', minRole: 'Analyst' },
+  { name: 'kpis', label: 'KPIs', minRole: 'Both roles' },
+  { name: 'orders_by_status', label: 'Orders by Status', minRole: 'Both roles' },
+  { name: 'monthly_revenue', label: 'Monthly Revenue', minRole: 'Both roles' },
+  { name: 'revenue_by_category', label: 'Revenue by Category', minRole: 'Both roles' },
 ]
 
 export default function Reports() {
@@ -32,7 +32,7 @@ export default function Reports() {
       <div>
         <h1 className="text-2xl font-semibold">Reports</h1>
         <p className="text-sm text-neutral-500">
-          Export warehouse data as CSV. Some reports require the Analyst role (backend-enforced).
+          Export warehouse data as CSV. All reports are available to both roles (admin and analyst).
         </p>
       </div>
 
