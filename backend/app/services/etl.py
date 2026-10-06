@@ -20,8 +20,6 @@ from dataclasses import dataclass, field
 from typing import Dict, List
 
 import pandas as pd
-from sqlalchemy import text
-from sqlalchemy.orm import Session
 
 from app.database.session import Base, engine
 import app.models.warehouse as warehouse  # noqa: F401  (register models)
@@ -183,12 +181,32 @@ def transform(data: Dict[str, pd.DataFrame], report: ETLReport) -> Dict[str, pd.
     orders["delivered_customer_date"] = orders["order_delivered_customer_date"].dt.date
     orders["estimated_delivery_date"] = orders["order_estimated_delivery_date"].dt.date
 
-    # --- payments: aggregate per order ---
-    pay_agg = (
-        payments.assign(payment_value=pd.to_numeric(payments["payment_value"], errors="coerce"))
-        .groupby("order_id", as_index=False)["payment_value"]
-        .sum()
+    # --- payments: total per order + the primary payment method ---
+    # Primary payment = the order's highest-value payment (ties broken by the
+    # earliest sequence); its type/installments describe how the order was
+    # settled. payment_value stays the sum across all payments of the order.
+    payments["payment_value"] = pd.to_numeric(payments["payment_value"], errors="coerce")
+    payments["payment_sequential"] = pd.to_numeric(
+        payments["payment_sequential"], errors="coerce"
     )
+    payments["payment_installments"] = pd.to_numeric(
+        payments["payment_installments"], errors="coerce"
+    ).astype("Int64")
+
+    pay_agg = payments.groupby("order_id", as_index=False).agg(
+        payment_value=("payment_value", "sum"),
+    )
+    primary = (
+        payments.dropna(subset=["payment_value"])
+        .sort_values(
+            ["order_id", "payment_value", "payment_sequential"],
+            ascending=[True, False, True],
+        )
+        .drop_duplicates(subset=["order_id"], keep="first")[
+            ["order_id", "payment_type", "payment_installments"]
+        ]
+    )
+    pay_agg = pay_agg.merge(primary, on="order_id", how="left")
 
     # --- reviews: average score per order ---
     rev_agg = (
@@ -266,6 +284,8 @@ def transform(data: Dict[str, pd.DataFrame], report: ETLReport) -> Dict[str, pd.
             "is_late",
             "review_score",
             "payment_value",
+            "payment_type",
+            "payment_installments",
             "item_revenue",
             "freight_value",
         ]
@@ -320,11 +340,19 @@ def transform(data: Dict[str, pd.DataFrame], report: ETLReport) -> Dict[str, pd.
 
 
 def load(tables: Dict[str, pd.DataFrame], report: ETLReport) -> None:
-    Base.metadata.create_all(bind=engine)
-    with engine.begin() as conn:
-        # idempotent reload: clear in FK-safe order
-        for t in ["fact_order_items", "fact_orders", "dim_date", "dim_seller", "dim_product", "dim_customer"]:
-            conn.execute(text(f'DELETE FROM {t}'))
+    # Rebuild ONLY the warehouse tables (never the application's user tables)
+    # so schema changes - e.g. new fact columns - are applied on re-runs.
+    # Explicit order: children first for the drop, parents first for the create.
+    warehouse_tables = [
+        warehouse.FactOrderItems.__table__,
+        warehouse.FactOrders.__table__,
+        warehouse.DimDate.__table__,
+        warehouse.DimSeller.__table__,
+        warehouse.DimProduct.__table__,
+        warehouse.DimCustomer.__table__,
+    ]
+    Base.metadata.drop_all(bind=engine, tables=warehouse_tables)
+    Base.metadata.create_all(bind=engine, tables=list(reversed(warehouse_tables)))
     with engine.begin() as conn:
         for name in ["dim_customer", "dim_product", "dim_seller", "dim_date"]:
             tables[name].to_sql(name, con=conn, if_exists="append", index=False)

@@ -2,7 +2,8 @@
 
 Grain:
 - fact_order_items: one row per order line (order_id + order_item_id)
-- fact_orders: one row per order (order-level measures)
+- fact_orders: one row per order (order-level measures, including the
+  primary payment method: the highest-value payment of the order)
 - dimensions: customer, product, seller, date
 
 All monetary values are in the dataset's original currency (BRL). No profit,
@@ -73,6 +74,8 @@ class FactOrders(Base):
     is_late = Column(Boolean, nullable=True)
     review_score = Column(Float, nullable=True)
     payment_value = Column(Float, nullable=True)
+    payment_type = Column(String, nullable=True)
+    payment_installments = Column(Integer, nullable=True)
     item_revenue = Column(Float, nullable=True)
     freight_value = Column(Float, nullable=True)
 

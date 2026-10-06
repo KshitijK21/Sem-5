@@ -1,9 +1,8 @@
-from typing import Optional
-
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
-from app.analytics import kpis as kpi_service
+from app.analytics import metrics
+from app.analytics.filters import Filters, analytics_filters
 from app.database.deps import get_db
 
 router = APIRouter()
@@ -11,28 +10,39 @@ router = APIRouter()
 
 @router.get("/kpis")
 def kpis(
-    date_from: Optional[str] = Query(default=None, description="ISO date, inclusive"),
-    date_to: Optional[str] = Query(default=None, description="ISO date, inclusive"),
-    order_status: Optional[str] = Query(default=None),
+    f: Filters = Depends(analytics_filters),
     db: Session = Depends(get_db),
 ):
     """Return verified business KPIs computed from the loaded Olist warehouse.
 
     Values come from real data via the ETL pipeline (see docs/KPIs.md).
+    Accepts the shared analytics filter set (see docs/ANALYTICS.md).
     """
-    return kpi_service.get_kpis(db, date_from=date_from, date_to=date_to, order_status=order_status)
+    return {"filters": f.as_dict(), "kpis": metrics.kpis(db, f)}
 
 
 @router.get("/monthly-revenue")
-def monthly_revenue(db: Session = Depends(get_db)):
-    return {"series": kpi_service.monthly_revenue(db)}
+def monthly_revenue(
+    f: Filters = Depends(analytics_filters),
+    limit: int = Query(default=24, ge=1, le=400),
+    db: Session = Depends(get_db),
+):
+    series = metrics.time_series(db, f, "month")
+    return {"series": series[-limit:]}
 
 
 @router.get("/revenue-by-category")
-def revenue_by_category(db: Session = Depends(get_db)):
-    return {"series": kpi_service.revenue_by_category(db)}
+def revenue_by_category(
+    f: Filters = Depends(analytics_filters),
+    limit: int = Query(default=15, ge=1, le=100),
+    db: Session = Depends(get_db),
+):
+    return {"series": metrics.revenue_by_category(db, f, limit=limit)}
 
 
 @router.get("/orders-by-status")
-def orders_by_status(db: Session = Depends(get_db)):
-    return {"series": kpi_service.orders_by_status(db)}
+def orders_by_status(
+    f: Filters = Depends(analytics_filters),
+    db: Session = Depends(get_db),
+):
+    return {"series": metrics.orders_by_status(db, f)}
