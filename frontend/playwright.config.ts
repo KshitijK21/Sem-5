@@ -2,30 +2,33 @@ import { defineConfig, devices } from '@playwright/test'
 
 export default defineConfig({
   testDir: './e2e',
-  timeout: 30_000,
-  expect: { timeout: 10_000 },
-  fullyParallel: false,
-  retries: 0,
-  reporter: [['list']],
+  fullyParallel: true,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 1 : undefined,
+  reporter: 'html',
   use: {
     baseURL: 'http://localhost:5173',
-    trace: 'off',
+    trace: 'on-first-retry',
   },
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+  projects: [
+    {
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'] },
+    },
+  ],
   webServer: [
     {
-      command: 'python -m uvicorn app.main:app --port 8000',
-      cwd: '../backend',
-      url: 'http://localhost:8000/health',
-      reuseExistingServer: true,
-      timeout: 60_000,
+      command: 'cd ../backend && python -m uvicorn app.main:app --host 127.0.0.1 --port 8000',
+      url: 'http://127.0.0.1:8000/api/health',
+      reuseExistingServer: !process.env.CI,
+      timeout: 120 * 1000,
     },
     {
       command: 'npm run dev',
-      cwd: '.',
       url: 'http://localhost:5173',
-      reuseExistingServer: true,
-      timeout: 60_000,
+      reuseExistingServer: !process.env.CI,
+      timeout: 120 * 1000,
     },
   ],
 })

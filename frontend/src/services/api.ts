@@ -16,8 +16,26 @@ async function request<T>(path: string, init: RequestInit = {}, retry = true): P
     const token = await refreshAccessToken()
     if (token) return request<T>(path, init, false)
   }
-  if (!r.ok) throw new Error(`Request failed: ${r.status}`)
+  if (!r.ok) throw new Error(await errorMessage(r))
   return r.json() as Promise<T>
+}
+
+/** Turn an error response into a human-readable message (uses `detail`). */
+async function errorMessage(r: Response): Promise<string> {
+  const fallback = `Request failed: ${r.status}`
+  try {
+    const body = (await r.json()) as { detail?: unknown }
+    if (typeof body.detail === 'string' && body.detail.trim()) return body.detail
+    if (Array.isArray(body.detail)) {
+      const msgs = body.detail
+        .map((d) => (d && typeof d === 'object' && 'msg' in d ? String(d.msg) : ''))
+        .filter(Boolean)
+      if (msgs.length) return msgs.join('; ')
+    }
+  } catch {
+    // non-JSON error body: keep the fallback
+  }
+  return fallback
 }
 
 function getJson<T>(path: string): Promise<T> {
@@ -115,12 +133,20 @@ function postJson<T>(path: string, body: unknown): Promise<T> {
   })
 }
 
+export type MlInferenceState = 'inference_ready' | 'unavailable' | 'inference_failed'
+
 export interface MlModel {
   name: string
   algorithm: string | null
+  target?: string | null
+  features?: string[] | null
   trained_at: string | null
   metrics: Record<string, unknown> | null
   artifact_available: boolean
+  artifact_path?: string | null
+  trained?: boolean
+  inference?: MlInferenceState
+  reason?: string | null
 }
 
 export interface MlFeature {
@@ -133,37 +159,184 @@ export function getMlStatus() {
   return getJson<{ features: MlFeature[] }>('/api/ml/status')
 }
 
+/** Optional date-range shared by the data-driven ML endpoints. */
+export interface MlDateFilter {
+  date_from?: string
+  date_to?: string
+}
+
+function dateQs(f: MlDateFilter | undefined): URLSearchParams {
+  const qs = new URLSearchParams()
+  if (f?.date_from) qs.set('date_from', f.date_from)
+  if (f?.date_to) qs.set('date_to', f.date_to)
+  return qs
+}
+
+function withQuestion(qs: URLSearchParams): string {
+  const s = qs.toString()
+  return s ? `?${s}` : ''
+}
+
+export interface RegressionMetrics {
+  mae: number
+  rmse: number
+  mape?: number
+}
+
+export interface ForecastMetrics {
+  model?: RegressionMetrics
+  seasonal_naive_baseline?: RegressionMetrics
+  n_train?: number
+  n_test?: number
+}
+
 export interface ForecastPoint {
   date: string
+  value: number
+  orders?: number
+  revenue?: number
+}
+
+export interface ForecastResult {
+  model: string
+  algorithm: string | null
+  target: 'orders' | 'revenue'
+  unit: string
+  status: string
+  periods: number
+  history_tail: ForecastPoint[]
+  forecast: ForecastPoint[]
+  metrics: ForecastMetrics
+  metadata: {
+    trained_at?: string | null
+    artifact?: string | null
+    notes?: string | null
+    n_history_days: number
+    date_from?: string | null
+    date_to?: string | null
+    generated_at?: string
+  }
+}
+
+export function getForecast(
+  opts: { periods?: number; target?: 'orders' | 'revenue' } & MlDateFilter = {},
+) {
+  const qs = new URLSearchParams()
+  qs.set('periods', String(opts.periods ?? 30))
+  qs.set('target', opts.target ?? 'orders')
+  const dates = dateQs(opts)
+  for (const [k, v] of dates) qs.set(k, v)
+  return getJson<ForecastResult>(`/api/ml/forecast?${qs.toString()}`)
+}
+
+export interface CustomerCluster {
+  cluster: number
+  customers: number
+  share: number
+  mean_recency_days: number
+  mean_frequency: number
+  mean_monetary: number
+}
+
+export interface ProductCluster {
+  cluster: number
+  products: number
+  share: number
+  mean_total_qty: number
+  mean_total_revenue: number
+  mean_avg_price: number
+  mean_product_weight_g: number
+}
+
+export interface ClusteringMetrics {
+  k?: number
+  silhouette?: number
+  silhouette_by_k?: Record<string, number>
+  cluster_sizes?: Record<string, number>
+  cluster_means?: Record<string, Record<string, number>>
+}
+
+export interface CustomerSegmentsResult {
+  model: string
+  algorithm: string | null
+  target: string
+  status: string
+  inference: {
+    n_customers: number
+    k: number
+    features: string[]
+    clusters: CustomerCluster[]
+  }
+  metrics: ClusteringMetrics
+  metadata: TrainedModelMeta
+}
+
+export function getCustomerSegments(f: MlDateFilter = {}) {
+  return getJson<CustomerSegmentsResult>(`/api/ml/segments/customers${withQuestion(dateQs(f))}`)
+}
+
+export interface ProductSegmentsResult {
+  model: string
+  algorithm: string | null
+  target: string
+  status: string
+  inference: {
+    n_products: number
+    k: number
+    features: string[]
+    clusters: ProductCluster[]
+  }
+  metrics: ClusteringMetrics
+  metadata: TrainedModelMeta
+}
+
+export function getProductSegments(f: MlDateFilter = {}) {
+  return getJson<ProductSegmentsResult>(`/api/ml/segments/products${withQuestion(dateQs(f))}`)
+}
+
+export interface TrainedModelMeta {
+  trained_at?: string | null
+  artifact?: string | null
+  notes?: string | null
+  date_from?: string | null
+  date_to?: string | null
+  generated_at?: string
+}
+
+export interface AnomalyRow {
+  date: string
   orders: number
+  revenue: number
+  score: number
+  is_anomaly: boolean
 }
 
-export function getForecast(periods = 30) {
-  return getJson<{ history_tail: ForecastPoint[]; forecast: ForecastPoint[] }>(
-    `/api/ml/forecast?periods=${periods}`,
-  )
+export interface AnomaliesResult {
+  model: string
+  algorithm: string | null
+  target: string
+  status: string
+  inference: {
+    n_days: number
+    n_anomalies: number
+    anomaly_share: number
+    contamination: number | null
+    score_definition: string
+    evaluated_from: string
+    evaluated_to: string
+    top_anomalies: AnomalyRow[]
+  }
+  metrics: {
+    contamination?: number
+    n_days?: number
+    n_anomalies?: number
+    top_anomalies?: AnomalyRow[]
+  }
+  metadata: TrainedModelMeta
 }
 
-export interface SegmentMetrics {
-  k: number
-  silhouette: number
-  cluster_sizes: Record<string, number>
-  cluster_means: Record<string, Record<string, number>>
-}
-
-export function getCustomerSegments() {
-  return getJson<{ metrics: SegmentMetrics; status: string }>('/api/ml/segments/customers')
-}
-
-export interface AnomalyMetrics {
-  contamination: number
-  n_days: number
-  n_anomalies: number
-  top_anomalies: Array<{ date: string; orders: number; revenue: number; score: number }>
-}
-
-export function getAnomalies() {
-  return getJson<{ metrics: AnomalyMetrics; status: string }>('/api/ml/anomalies')
+export function getAnomalies(f: MlDateFilter = {}) {
+  return getJson<AnomaliesResult>(`/api/ml/anomalies${withQuestion(dateQs(f))}`)
 }
 
 export interface SalesPredictInput {
@@ -175,11 +348,24 @@ export interface SalesPredictInput {
   product_category_name: string
 }
 
+export interface SalesPredictResult {
+  predicted_item_revenue: number
+  currency: string
+  model: string
+  algorithm: string | null
+  target: string | null
+  status: string
+  metrics: {
+    selected?: string
+    candidates?: Record<string, RegressionMetrics>
+    n_train?: number
+    n_test?: number
+  }
+  metadata: TrainedModelMeta
+}
+
 export function predictSales(input: SalesPredictInput) {
-  return postJson<{ predicted_item_revenue: number; currency: string }>(
-    '/api/ml/predict/sales',
-    input,
-  )
+  return postJson<SalesPredictResult>('/api/ml/predict/sales', input)
 }
 
 // ---- AI Insights ----
