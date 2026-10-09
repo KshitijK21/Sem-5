@@ -45,13 +45,15 @@ def build_pipeline(model) -> Pipeline:
 
 
 def main() -> None:
+    import xgboost as xgb
     df = pd.read_csv(processed_dir() / "orders_features.csv")
     df = df.dropna(subset=[TARGET])
     X = df[NUM + CAT].copy()
     X[CAT] = X[CAT].fillna("unknown")
     y = df[TARGET].astype(float)
 
-    Xtr, Xte, ytr, yte = train_test_split(X, y, test_size=0.2, random_state=42)
+    # Chronological split (no shuffle)
+    Xtr, Xte, ytr, yte = train_test_split(X, y, test_size=0.2, shuffle=False)
 
     results = {}
     best = None
@@ -59,6 +61,7 @@ def main() -> None:
     for name, model in [
         ("linear_regression", LinearRegression()),
         ("random_forest", RandomForestRegressor(n_estimators=100, max_depth=12, random_state=42, n_jobs=-1)),
+        ("xgboost", xgb.XGBRegressor(n_estimators=100, max_depth=6, random_state=42, n_jobs=-1)),
     ]:
         pipe = build_pipeline(model).fit(Xtr, ytr)
         pred = pipe.predict(Xte)
@@ -79,13 +82,12 @@ def main() -> None:
         features=NUM + CAT,
         metrics={"selected": name, "candidates": results, "n_train": len(Xtr), "n_test": len(Xte)},
         status="available",
-        algorithm=f"best of [LinearRegression, RandomForest] -> {name}",
+        algorithm=f"best of [LinearRegression, RandomForest, XGBoost] -> {name}",
         dataset_files=[processed_dir() / "orders_features.csv"],
         artifact=artifact.name,
-        notes="Random split seed=42. No leakage features. Historical data only.",
+        notes="Chronological split (shuffle=False). No leakage features. Historical data only.",
     )
     print(f"selected: {name}")
-
 
 if __name__ == "__main__":
     main()

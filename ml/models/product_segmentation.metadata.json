@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "target": "cluster_label",
   "algorithm": "KMeans (product engagement, standardized)",
-  "trained_at": "2026-10-03T12:52:11.460945+00:00",
-  "dataset_fingerprint": "1fcb5f3e0c7e497e",
+  "trained_at": "2026-10-09T17:21:24.015097+00:00",
+  "dataset_fingerprint": "93bcf0b60e31a2fb",
   "features_schema": [
     "qty_log",
     "revenue_log",
@@ -13,40 +13,40 @@
   ],
   "metrics": {
     "k": 4,
-    "silhouette": 0.4798,
+    "silhouette": 0.4037,
     "silhouette_by_k": {
-      "2": 0.4625,
-      "3": 0.4676,
-      "4": 0.4798,
-      "5": 0.3574,
-      "6": 0.3714
+      "2": 0.394,
+      "3": 0.3906,
+      "4": 0.4037,
+      "5": 0.3276,
+      "6": 0.3313
     },
     "cluster_sizes": {
-      "0": 2187,
-      "1": 6746,
-      "2": 23279,
-      "3": 739
+      "0": 19947,
+      "1": 10392,
+      "2": 2122,
+      "3": 490
     },
     "cluster_means": {
       "0": {
-        "total_qty": 1.92,
-        "total_revenue": 569.99,
-        "avg_price": 310.5
+        "total_qty": 4.29,
+        "total_revenue": 324.28,
+        "avg_price": 91.47
       },
       "1": {
-        "total_qty": 10.95,
-        "total_revenue": 1144.99,
-        "avg_price": 130.71
+        "total_qty": 29.33,
+        "total_revenue": 3330.97,
+        "avg_price": 157.49
       },
       "2": {
-        "total_qty": 1.42,
-        "total_revenue": 120.65,
-        "avg_price": 96.04
+        "total_qty": 7.89,
+        "total_revenue": 2481.75,
+        "avg_price": 340.13
       },
       "3": {
-        "total_qty": 1.91,
-        "total_revenue": 2452.6,
-        "avg_price": 1341.56
+        "total_qty": 7.13,
+        "total_revenue": 11221.38,
+        "avg_price": 1691.06
       }
     }
   },

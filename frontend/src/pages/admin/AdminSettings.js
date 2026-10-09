@@ -1,0 +1,17 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { useEffect, useState } from 'react';
+import { getSystemSettings } from '@/services/api';
+export default function AdminSettings() {
+    const [settings, setSettings] = useState(null);
+    const [error, setError] = useState(null);
+    useEffect(() => {
+        getSystemSettings()
+            .then(setSettings)
+            .catch(() => setError('Could not load system settings.'));
+    }, []);
+    if (error)
+        return _jsx("div", { className: "text-red-400 text-sm", children: error });
+    if (!settings)
+        return _jsx("div", { className: "text-neutral-400 text-sm", children: "Loading settings\u2026" });
+    return (_jsxs("div", { className: "space-y-4", children: [_jsxs("div", { className: "bg-neutral-900/60 border border-neutral-800 rounded-lg p-4", children: [_jsx("h2", { className: "font-medium mb-3", children: "Application" }), _jsxs("div", { className: "grid grid-cols-2 md:grid-cols-4 gap-4 text-sm", children: [_jsxs("div", { children: [_jsx("div", { className: "text-neutral-500 text-xs uppercase", children: "Version" }), settings.app, " v", settings.version] }), _jsxs("div", { children: [_jsx("div", { className: "text-neutral-500 text-xs uppercase", children: "Environment" }), settings.env] }), _jsxs("div", { children: [_jsx("div", { className: "text-neutral-500 text-xs uppercase", children: "Auth required" }), String(settings.auth_required)] }), _jsxs("div", { children: [_jsx("div", { className: "text-neutral-500 text-xs uppercase", children: "Roles" }), settings.roles.join(', ')] }), _jsxs("div", { className: "col-span-2", children: [_jsx("div", { className: "text-neutral-500 text-xs uppercase", children: "Dataset" }), settings.dataset] }), _jsxs("div", { children: [_jsx("div", { className: "text-neutral-500 text-xs uppercase", children: "Access token TTL" }), settings.access_token_expire_minutes, " min"] }), _jsxs("div", { children: [_jsx("div", { className: "text-neutral-500 text-xs uppercase", children: "Refresh token TTL" }), settings.refresh_token_expire_minutes, " min"] })] })] }), _jsxs("div", { className: "bg-neutral-900/60 border border-neutral-800 rounded-lg p-4", children: [_jsx("h2", { className: "font-medium mb-3", children: "AI assistant" }), _jsxs("div", { className: "grid grid-cols-2 md:grid-cols-3 gap-4 text-sm", children: [_jsxs("div", { children: [_jsx("div", { className: "text-neutral-500 text-xs uppercase", children: "Enabled" }), String(settings.llm.enabled)] }), _jsxs("div", { children: [_jsx("div", { className: "text-neutral-500 text-xs uppercase", children: "Provider" }), settings.llm.provider] }), _jsxs("div", { children: [_jsx("div", { className: "text-neutral-500 text-xs uppercase", children: "Timeout" }), settings.llm.timeout_seconds, "s"] })] })] }), _jsxs("div", { className: "bg-neutral-900/60 border border-neutral-800 rounded-lg p-4", children: [_jsx("h2", { className: "font-medium mb-3", children: "Reports enabled" }), _jsx("div", { className: "flex flex-wrap gap-2", children: settings.reports.map((r) => (_jsx("span", { className: "text-xs bg-neutral-800 rounded px-2 py-1", children: r }, r))) })] }), _jsx("div", { className: "bg-neutral-900/60 border border-neutral-800 rounded-lg p-4 text-sm text-neutral-500", children: "Secrets are never returned by this endpoint: no signing keys, passwords, tokens or environment values are exposed." })] }));
+}

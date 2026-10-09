@@ -48,6 +48,13 @@ def build_daily_series_with_revenue(
         .agg(orders=("order_id", "nunique"), revenue=("revenue", "sum"))
         .reset_index()
     )
+    if not daily.empty:
+        min_date = daily["date"].min()
+        max_date = daily["date"].max()
+        all_dates = pd.date_range(min_date, max_date, freq="D")
+        daily = daily.set_index("date").reindex(all_dates).fillna({"orders": 0, "revenue": 0.0}).reset_index()
+        daily = daily.rename(columns={"index": "date"})
+    
     daily["avg_order_value"] = np.where(
         daily["orders"] > 0, daily["revenue"] / daily["orders"], 0.0
     )

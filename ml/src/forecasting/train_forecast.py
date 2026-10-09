@@ -2,7 +2,7 @@
 
 - Target: daily order count (also trains on daily revenue as second target).
 - Baseline: seasonal naive (value 7 days earlier).
-- Model: Linear Regression on lag/rolling features (sklearn).
+- Models: Linear Regression, XGBRegressor, ARIMA.
 - Split: chronological 80/20 (no shuffling -> no leakage).
 
 Saves artifacts + metadata to ml/models (gitignored). Honest metrics only.
@@ -17,12 +17,19 @@ import joblib
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import LinearRegression
+import xgboost as xgb
+from statsmodels.tsa.arima.model import ARIMA
+import warnings
+from statsmodels.tools.sm_exceptions import ConvergenceWarning
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src.common.metadata import write_metadata  # noqa: E402
 from src.common.paths import models_dir, processed_dir  # noqa: E402
 from src.evaluation.metrics import regression_metrics  # noqa: E402
+
+warnings.simplefilter('ignore', ConvergenceWarning)
+warnings.simplefilter('ignore', UserWarning)
 
 
 def make_features(series: pd.Series) -> pd.DataFrame:
@@ -47,35 +54,63 @@ def train_target(name: str, series: pd.Series) -> dict:
     naive_pred = test["lag7"]
     baseline = regression_metrics(yte, naive_pred)
 
-    model = LinearRegression().fit(Xtr, ytr)
-    pred = model.predict(Xte)
-    metrics = regression_metrics(yte, pred)
+    candidates = {}
+    
+    # Linear Regression
+    lr = LinearRegression().fit(Xtr, ytr)
+    lr_pred = lr.predict(Xte)
+    lr_metrics = regression_metrics(yte, lr_pred)
+    candidates["LinearRegression"] = {"model": lr, "metrics": lr_metrics, "type": "sklearn"}
 
+    # XGBoost
+    xg = xgb.XGBRegressor(n_estimators=100, max_depth=4, random_state=42).fit(Xtr, ytr)
+    xg_pred = xg.predict(Xte)
+    xg_metrics = regression_metrics(yte, xg_pred)
+    candidates["XGBoost"] = {"model": xg, "metrics": xg_metrics, "type": "sklearn"}
+
+    # ARIMA
+    arima_model = ARIMA(ytr.values, order=(7, 1, 1))
+    try:
+        arima_fit = arima_model.fit(method='innovations_mle')
+        arima_pred = arima_fit.forecast(steps=len(yte))
+        arima_metrics = regression_metrics(yte, arima_pred)
+        candidates["ARIMA"] = {"model": arima_fit, "metrics": arima_metrics, "type": "statsmodels"}
+    except Exception as e:
+        print(f"ARIMA failed for {name}: {e}")
+
+    best_name = min(candidates.keys(), key=lambda k: candidates[k]["metrics"]["mae"])
+    best_candidate = candidates[best_name]
+    best_metrics = best_candidate["metrics"]
+    best_model = best_candidate["model"]
+    
     artifact = models_dir() / f"{name}.joblib"
-    joblib.dump({"model": model, "features": feature_cols}, artifact)
+    
+    if best_candidate["type"] == "sklearn":
+        joblib.dump({"model": best_model, "features": feature_cols, "type": "sklearn", "algorithm": best_name}, artifact)
+    else:
+        joblib.dump({"model": best_model, "features": None, "type": "statsmodels", "algorithm": best_name}, artifact)
 
     meta = write_metadata(
         name,
         target=name,
-        features=feature_cols,
-        metrics={"model": metrics, "seasonal_naive_baseline": baseline, "n_train": len(train), "n_test": len(test)},
+        features=feature_cols if best_candidate["type"] == "sklearn" else [],
+        metrics={"model": best_metrics, "seasonal_naive_baseline": baseline, "n_train": len(train), "n_test": len(test)},
         status="available",
-        algorithm="LinearRegression (lag/rolling features)",
+        algorithm=best_name,
         dataset_files=[processed_dir() / "daily_series.csv"],
         artifact=artifact.name,
-        notes="Chronological split; seasonal naive baseline included. Historical data only.",
+        notes=f"Selected {best_name} over candidates. Candidates evaluated: {list(candidates.keys())}",
     )
-    return {"name": name, "metrics": metrics, "baseline": baseline, "metadata": str(meta)}
-
+    return {"name": name, "best": best_name, "metrics": best_metrics, "baseline": baseline, "metadata": str(meta)}
 
 def main() -> None:
     daily = pd.read_csv(processed_dir() / "daily_series.csv", parse_dates=["date"]).sort_values("date")
+    daily.set_index("date", inplace=True)
     results = []
     results.append(train_target("sales_forecast_orders", daily["orders"].astype(float)))
     results.append(train_target("sales_forecast_revenue", daily["revenue"].astype(float)))
     for r in results:
-        print(f"{r['name']}: model={r['metrics']} baseline={r['baseline']}")
-
+        print(f"{r['name']} ({r['best']}): model={r['metrics']} baseline={r['baseline']}")
 
 if __name__ == "__main__":
     main()

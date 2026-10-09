@@ -218,11 +218,17 @@ def forecast(
     """Recursive daily forecast via real model.predict() calls."""
     name = FORECAST_TARGET_MODELS[target]
     bundle = _load_artifact(name)
-    model, feature_cols = bundle["model"], bundle["features"]
+    model = bundle["model"]
+    feature_cols = bundle.get("features", [])
 
     series = ml_features.daily_series(db, date_from, date_to)
     values = series[target].astype(float).tolist()
-    preds = ml_features.recursive_forecast(model, feature_cols, values, periods)
+    
+    if bundle.get("type") == "statsmodels":
+        res = model.apply(values)
+        preds = list(res.forecast(steps=periods))
+    else:
+        preds = ml_features.recursive_forecast(model, feature_cols, values, periods)
 
     import pandas as pd
 

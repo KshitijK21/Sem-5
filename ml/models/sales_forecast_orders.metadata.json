@@ -2,9 +2,9 @@
   "name": "sales_forecast_orders",
   "version": "0.1.0",
   "target": "sales_forecast_orders",
-  "algorithm": "LinearRegression (lag/rolling features)",
-  "trained_at": "2026-10-03T12:38:44.522047+00:00",
-  "dataset_fingerprint": "1edfb5be08d6ea57",
+  "algorithm": "LinearRegression",
+  "trained_at": "2026-10-09T17:22:58.843361+00:00",
+  "dataset_fingerprint": "cd511e4143a88aeb",
   "features_schema": [
     "lag1",
     "lag7",
@@ -15,19 +15,19 @@
   ],
   "metrics": {
     "model": {
-      "mae": 35.2808,
-      "rmse": 44.0684,
-      "mape": 302.9289
+      "mae": 18.7282,
+      "rmse": 24.0393,
+      "mape": 14.2571
     },
     "seasonal_naive_baseline": {
-      "mae": 56.0744,
-      "rmse": 74.7963,
-      "mape": 294.3114
+      "mae": 21.1848,
+      "rmse": 28.3456,
+      "mape": 16.489
     },
-    "n_train": 483,
-    "n_test": 121
+    "n_train": 2314,
+    "n_test": 579
   },
   "status": "available",
   "artifact": "sales_forecast_orders.joblib",
-  "notes": "Chronological split; seasonal naive baseline included. Historical data only."
+  "notes": "Selected LinearRegression over candidates. Candidates evaluated: ['LinearRegression', 'XGBoost', 'ARIMA']"
 }

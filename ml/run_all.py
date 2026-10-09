@@ -9,7 +9,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 STEPS = [
-    "src.data_processing.build_datasets",
+    # "src.data_processing.build_datasets",
     "src.forecasting.train_forecast",
     "src.prediction.train_sales_prediction",
     "src.customer_segmentation.train_customer_segmentation",
