@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "target": "item_revenue",
   "algorithm": "best of [LinearRegression, RandomForest, XGBoost] -> linear_regression",
-  "trained_at": "2026-10-09T17:20:44.600384+00:00",
+  "trained_at": "2026-10-11T11:06:27.519925+00:00",
   "dataset_fingerprint": "273ccd1ef1f36496",
   "features_schema": [
     "purchase_month",
@@ -19,12 +19,12 @@
       "linear_regression": {
         "mae": 104.8557,
         "rmse": 246.3515,
-        "mape": 133.8254
+        "mape": 133.8252
       },
       "random_forest": {
-        "mae": 106.8046,
-        "rmse": 249.3298,
-        "mape": 138.5514
+        "mae": 106.8044,
+        "rmse": 249.3396,
+        "mape": 138.5502
       },
       "xgboost": {
         "mae": 105.3688,
